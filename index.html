@@ -6,8 +6,7 @@
 <meta name="theme-color" content="#0F172A" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="image_4a623bff.jpg" type="image/jpeg" />
-
- <title>Guitar Chord Teleprompter</title>
+<title>Ozzie's Play App</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -16,10 +15,9 @@
     height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden;
   }
   #app {
-    width: 100%; max-width: 480px; height: 620px; max-height: 620px;
+    width: 100%; max-width: 480px; height: 100%; max-height: 760px;
     background: #0F172A; display: flex; flex-direction: column;
-    overflow: hidden; position: relative; border-radius: 14px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+    overflow: hidden; position: relative;
   }
   .hidden { display: none !important; }
   #welcomeScreen { display: flex; flex-direction: column; height: 100%; background: #0F172A; }
@@ -57,9 +55,7 @@
   .badge-lang { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: #1E293B; color: #94A3B8; font-weight: 600; }
   .badge-key { font-size: 11px; padding: 2px 7px; border-radius: 999px; border: 1px solid #FACC15; color: #FACC15; font-weight: 700; }
   .artist-group { border-bottom: 1px solid #1E293B; }
-  .artist-header {
-    padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #090D16;
-  }
+  .artist-header { padding: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #090D16; }
   .artist-name { font-size: 15px; font-weight: 700; color: #F8FAFC; }
   .artist-count { font-size: 12px; background: #1E293B; color: #38BDF8; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
   .artist-songs { padding-left: 10px; background: #000000; }
@@ -70,8 +66,8 @@
     text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .p-key-pill {
-    border: 1px solid #FACC15; color: #FACC15; font-size: 12px; font-weight: 700;
-    padding: 3px 9px; border-radius: 999px; white-space: nowrap; flex-shrink: 0;
+    background: #1E293B; border: 1px solid #FACC15; color: #FACC15; font-size: 12px; font-weight: 800;
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap; flex-shrink: 0; cursor: pointer;
   }
   .p-sec-bar { padding: 4px 14px 8px; display: flex; justify-content: space-between; align-items: center; min-height: 28px; background: #0F172A; }
   .countdown-pill {
@@ -114,16 +110,20 @@
   }
   .sec-pill.active { background: #2563EB; color: #FFFFFF; }
   #importModal {
-    position: absolute; inset: 0; background: rgba(2,6,23,0.96); z-index: 50;
+    position: absolute; inset: 0; background: rgba(2,6,23,0.97); z-index: 50;
     display: flex; flex-direction: column; padding: 14px; gap: 8px;
   }
   .m-head { display: flex; justify-content: space-between; align-items: center; }
   .m-title { font-size: 16px; font-weight: 700; color: #F8FAFC; }
   .m-close { background: #1E293B; color: #94A3B8; border: none; padding: 5px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-  .m-row { display: flex; gap: 6px; }
-  .m-input { flex: 1; background: #1E293B; border: 1px solid #334155; color: #F8FAFC; padding: 8px 10px; border-radius: 7px; font-size: 13px; }
-  .m-area { flex: 1; background: #000000; border: 1px solid #334155; color: #F8FAFC; padding: 10px; border-radius: 8px; font-size: 12px; font-family: monospace; resize: none; }
-  .m-save { background: #2563EB; color: #FFFFFF; border: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  .m-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .m-input { flex: 1; min-width: 85px; background: #1E293B; border: 1px solid #334155; color: #F8FAFC; padding: 8px 10px; border-radius: 7px; font-size: 13px; }
+  .chip-bar { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .chip-bar::-webkit-scrollbar { display: none; }
+  .chip-btn { background: #1E293B; border: 1px solid #3B82F6; color: #93C5FD; padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+  .chip-btn.sec { border-color: #FACC15; color: #FDE047; }
+  .m-area { flex: 1; background: #000000; border: 1px solid #334155; color: #F8FAFC; padding: 10px; border-radius: 8px; font-size: 13px; font-family: monospace; resize: none; }
+  .m-save { background: #2563EB; color: #FFFFFF; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -131,10 +131,10 @@
   <div id="welcomeScreen">
     <div class="w-header">
       <div>
-        <div class="w-title">Ozzie's Custom Prompter</div>
+        <div class="w-title">Ozzie's Play App</div>
         <div class="w-sub" id="songCountSub">Select a song to start</div>
       </div>
-      <button class="btn-import" id="openImportBtn">+ Import</button>
+      <button class="btn-import" id="openImportBtn">+ Smart Builder</button>
     </div>
     <div class="w-controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search artist or song..." />
@@ -150,7 +150,7 @@
   <div id="playerScreen" class="hidden">
     <div class="p-top">
       <button class="p-song-btn" id="backBtn">Song Title — Artist ▾</button>
-      <span class="p-key-pill" id="keyPill">Key: G</span>
+      <button class="p-key-pill" id="keyPill" title="Tap to transpose key">Key: G ▾</button>
     </div>
     <div class="p-sec-bar">
       <div id="countdownBox"></div>
@@ -182,6 +182,32 @@
   var ALL_SONGS = base.concat(custom);
   var activeTab = 'All', searchQuery = '', expandedArtist = null;
   var currentSong = null, parsedRows = [], sections = [], isPlaying = false, elapsed = 0, speed = 1, lastTick = null;
+  var transposeSteps = 0;
+
+  var NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  var FLAT_MAP = { 'Db':'C#','Eb':'D#','Gb':'F#','Ab':'G#','Bb':'A#' };
+  var TARGET_KEYS = ['Original', 'G Major', 'A Major', 'D Major', 'E Major'];
+  var targetIdx = 0;
+
+  function rootToIdx(root) {
+    return NOTES.indexOf(FLAT_MAP[root] || root);
+  }
+  function transposeChord(chord, steps) {
+    if (!steps) return chord;
+    return chord.replace(/^([A-G][#b]?)(.*)$/, function(_, root, suffix) {
+      var idx = rootToIdx(root);
+      if (idx === -1) return chord;
+      return NOTES.at((idx + steps + 120) % 12) + suffix;
+    });
+  }
+  function getStepsForTarget(origKey, targetKey) {
+    if (!targetKey || targetKey === 'Original') return 0;
+    var r1 = (origKey || 'G').split(' ').at(0);
+    var r2 = targetKey.split(' ').at(0);
+    var i1 = rootToIdx(r1), i2 = rootToIdx(r2);
+    if (i1 === -1 || i2 === -1) return 0;
+    return (i2 - i1 + 12) % 12;
+  }
 
   var welcomeScreen = document.getElementById('welcomeScreen');
   var playerScreen = document.getElementById('playerScreen');
@@ -283,13 +309,20 @@
     });
     return { totalSec: totalSec, rows: rows, sections: rawSecs };
   }
+  function updateKeyPill() {
+    if (!currentSong) return;
+    var activeKey = targetIdx === 0 ? currentSong.key : TARGET_KEYS.at(targetIdx);
+    document.getElementById('keyPill').textContent = 'Key: ' + activeKey.replace(' Major', '') + ' ▾';
+  }
   function launchSong(song) {
     currentSong = song;
+    targetIdx = 0;
+    transposeSteps = 0;
     var parsed = parseSongData(song);
     parsedRows = parsed.rows; sections = parsed.sections; currentSong.totalSec = parsed.totalSec;
     elapsed = 0; isPlaying = true; lastTick = performance.now();
     document.getElementById('backBtn').textContent = song.title + ' — ' + song.artist + ' ▾';
-    document.getElementById('keyPill').textContent = 'Key: ' + song.key.replace(' Major', '');
+    updateKeyPill();
     document.getElementById('playPauseBtn').textContent = 'Pause';
     welcomeScreen.classList.add('hidden'); playerScreen.classList.remove('hidden');
     renderPlayer();
@@ -318,7 +351,11 @@
       content.appendChild(txt);
       if (r.chords && r.chords.length) {
         var cr = document.createElement('div'); cr.className = 'chord-row';
-        r.chords.forEach(function(c) { var p = document.createElement('span'); p.className = 'chord-pill'; p.textContent = c; cr.appendChild(p); });
+        r.chords.forEach(function(c) {
+          var p = document.createElement('span'); p.className = 'chord-pill';
+          p.textContent = transposeChord(c, transposeSteps);
+          cr.appendChild(p);
+        });
         content.appendChild(cr);
       }
       rowEl.appendChild(bar); rowEl.appendChild(content); vp.appendChild(rowEl);
@@ -348,6 +385,13 @@
     } else { lastTick = now; }
     requestAnimationFrame(tick);
   }
+  document.getElementById('keyPill').onclick = function() {
+    if (!currentSong) return;
+    targetIdx = (targetIdx + 1) % TARGET_KEYS.length;
+    transposeSteps = getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
+    updateKeyPill();
+    renderPlayer();
+  };
   document.querySelectorAll('.tab').forEach(function(btn) {
     btn.onclick = function() { document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); }); btn.classList.add('active'); activeTab = btn.dataset.tab; expandedArtist = null; renderList(); };
   });
@@ -359,7 +403,7 @@
 
   var modal = document.getElementById('importModal');
   var mHead = document.createElement('div'); mHead.className = 'm-head';
-  var mTitle = document.createElement('div'); mTitle.className = 'm-title'; mTitle.textContent = 'Paste New Song (Saved to Phone)';
+  var mTitle = document.createElement('div'); mTitle.className = 'm-title'; mTitle.textContent = 'Smart Builder (Auto-Timestamps)';
   var closeBtn = document.createElement('button'); closeBtn.className = 'm-close'; closeBtn.textContent = '✕';
   mHead.appendChild(mTitle); mHead.appendChild(closeBtn);
 
@@ -370,28 +414,70 @@
 
   var row2 = document.createElement('div'); row2.className = 'm-row';
   var impLang = document.createElement('select'); impLang.className = 'm-input';
-  var optEn = document.createElement('option'); optEn.value = 'English'; optEn.textContent = 'English';
-  var optEs = document.createElement('option'); optEs.value = 'Spanish'; optEs.textContent = 'Spanish';
-  impLang.appendChild(optEn); impLang.appendChild(optEs);
-  var impKey = document.createElement('input'); impKey.className = 'm-input'; impKey.placeholder = 'Key (e.g. G Major)';
-  var impDur = document.createElement('input'); impDur.className = 'm-input'; impDur.placeholder = 'Length (e.g. 3:10)';
+  ['English','Spanish'].forEach(function(l) { var o = document.createElement('option'); o.value = l; o.textContent = l; impLang.appendChild(o); });
+  var impKey = document.createElement('select'); impKey.className = 'm-input';
+  ['G Major','A Major','D Major','E Major'].forEach(function(k) { var o = document.createElement('option'); o.value = k; o.textContent = k; impKey.appendChild(o); });
+  var impDur = document.createElement('input'); impDur.className = 'm-input'; impDur.placeholder = 'Length (3:15)';
   row2.appendChild(impLang); row2.appendChild(impKey); row2.appendChild(impDur);
 
+  var chipBar = document.createElement('div'); chipBar.className = 'chip-bar';
   var impBody = document.createElement('textarea'); impBody.className = 'm-area';
-  impBody.placeholder = '[0:00] Intro | G - D7 - G\n[0:15] Verse 1\n(G) First line of lyrics (D7) here';
-  var saveBtn = document.createElement('button'); saveBtn.className = 'm-save'; saveBtn.textContent = 'Save Song to Setlist';
+  impBody.placeholder = 'Paste plain lyrics here! Tap buttons above to drop sections or chords at cursor—timestamps generate automatically.';
 
-  modal.appendChild(mHead); modal.appendChild(row1); modal.appendChild(row2); modal.appendChild(impBody); modal.appendChild(saveBtn);
+  function insertAtCursor(str) {
+    var s = impBody.selectionStart || 0, e = impBody.selectionEnd || 0;
+    impBody.value = impBody.value.slice(0, s) + str + impBody.value.slice(e);
+    impBody.focus(); impBody.selectionStart = impBody.selectionEnd = s + str.length;
+  }
+  function renderChips() {
+    chipBar.innerHTML = '';
+    ['Verse','Chorus','Bridge'].forEach(function(sec) {
+      var b = document.createElement('button'); b.className = 'chip-btn sec'; b.textContent = '+ ' + sec;
+      b.onclick = function() { insertAtCursor('\n[' + sec + ']\n'); };
+      chipBar.appendChild(b);
+    });
+    var keyChords = { 'G Major':['G','C','D7'], 'A Major':['A','D','E7'], 'D Major':['D','G','A7'], 'E Major':['E','A','E7'] };
+    (keyChords[impKey.value] || ['G','C','D7']).forEach(function(ch) {
+      var b = document.createElement('button'); b.className = 'chip-btn'; b.textContent = '(' + ch + ')';
+      b.onclick = function() { insertAtCursor('(' + ch + ') '); };
+      chipBar.appendChild(b);
+    });
+  }
+  impKey.onchange = renderChips; renderChips();
+
+  var saveBtn = document.createElement('button'); saveBtn.className = 'm-save'; saveBtn.textContent = 'Auto-Format & Save to Setlist';
+  modal.appendChild(mHead); modal.appendChild(row1); modal.appendChild(row2); modal.appendChild(chipBar); modal.appendChild(impBody); modal.appendChild(saveBtn);
+
+  function autoFormatBody(raw, durStr) {
+    if (/^\[\d+:\d+\]/m.test(raw)) return raw;
+    var total = parseDuration(durStr || '3:15');
+    var lines = raw.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+    var blocks = [], cur = { name: 'Verse 1', lines: [] };
+    lines.forEach(function(l) {
+      var sm = l.match(/^\[([^\]]+)\]$/);
+      if (sm) {
+        if (cur.lines.length) blocks.push(cur);
+        cur = { name: sm.at(1), lines: [] };
+      } else { cur.lines.push(l); }
+    });
+    if (cur.lines.length) blocks.push(cur);
+    if (!blocks.length) return '[0:00] Verse 1\n' + raw;
+    var step = Math.max(8, Math.floor(total / blocks.length));
+    return blocks.map(function(b, idx) {
+      var t = idx * step;
+      return '[' + fmtTime(t) + '] ' + b.name + '\n' + b.lines.join('\n');
+    }).join('\n');
+  }
 
   document.getElementById('openImportBtn').onclick = function() { modal.classList.remove('hidden'); };
   closeBtn.onclick = function() { modal.classList.add('hidden'); };
   saveBtn.onclick = function() {
     var title = impTitle.value.trim(), artist = impArtist.value.trim();
-    var lang = impLang.value, key = impKey.value.trim() || 'G Major';
-    var duration = impDur.value.trim() || '3:00', body = impBody.value.trim();
-    if (!title || !artist || !body) return alert('Please fill in Title, Artist, and Lyrics/Timestamps.');
+    var duration = impDur.value.trim() || '3:15', raw = impBody.value.trim();
+    if (!title || !artist || !raw) return alert('Please enter Song Title, Artist Name, and Lyrics.');
+    var body = autoFormatBody(raw, duration);
     var parts = artist.split(' '), sort = parts.length > 1 ? parts.at(-1) + ', ' + parts.slice(0, -1).join(' ') : artist;
-    var newSong = { lang: lang, sort: sort, artist: artist, title: title, key: key, duration: duration, body: body };
+    var newSong = { lang: impLang.value, sort: sort, artist: artist, title: title, key: impKey.value, duration: duration, body: body };
     var saved = JSON.parse(localStorage.getItem('custom_teleprompter_songs') || '[]');
     saved.push(newSong); localStorage.setItem('custom_teleprompter_songs', JSON.stringify(saved));
     ALL_SONGS.push(newSong); modal.classList.add('hidden'); renderList();
