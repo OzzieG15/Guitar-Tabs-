@@ -532,12 +532,15 @@
       isPlaying = false;
       document.getElementById('playPauseBtn').textContent = 'Play';
     }
-    var frets = info.s.split(','), fingers = info.f.split(',');
-    var ns = 'http://w3.org';
+    var frets = info.s.split(','), fingers = 
+    var ns = ['http:/', 'www.w3.org', '2000', 'svg'].join('/');
+
+
     var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', '0 0 180 185');
     svg.setAttribute('width', '180');
     svg.setAttribute('height', '185');
+    svg.style.cssText = 'display:block;width:200px;height:205px;margin:6px auto 2px;background:#020617;border:1px solid #334155;border-radius:10px;';
 
     var nut = document.createElementNS(ns, 'rect');
     nut.setAttribute('x', '25'); nut.setAttribute('y', '26');
