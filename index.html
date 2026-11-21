@@ -524,7 +524,7 @@
     }
   }
 
-   function showChordDiagram(name) {
+     function showChordDiagram(name) {
     var info = CHORD_SHAPES[name];
     if (!info) return;
     wasPlayingBeforeChord = isPlaying;
@@ -532,61 +532,45 @@
       isPlaying = false;
       document.getElementById('playPauseBtn').textContent = 'Play';
     }
-    var frets = info.s.split(','), fingers = 
-    var ns = ['http:/', 'www.w3.org', '2000', 'svg'].join('/');
+    var frets = info.s.split(','), fingers = info.f.split(',');
 
+    var board = document.createElement('div');
+    board.style.cssText = 'background:#020617;border:1px solid #334155;border-radius:12px;padding:12px 14px 14px;margin:8px auto 0;width:210px;';
 
-    var svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', '0 0 180 185');
-    svg.setAttribute('width', '180');
-    svg.setAttribute('height', '185');
-    svg.style.cssText = 'display:block;width:200px;height:205px;margin:6px auto 2px;background:#020617;border:1px solid #334155;border-radius:10px;';
-
-    var nut = document.createElementNS(ns, 'rect');
-    nut.setAttribute('x', '25'); nut.setAttribute('y', '26');
-    nut.setAttribute('width', '130'); nut.setAttribute('height', '6');
-    nut.setAttribute('fill', '#F8FAFC'); svg.appendChild(nut);
-
-    for (var f = 1; f <= 4; f++) {
-      var line = document.createElementNS(ns, 'line');
-      line.setAttribute('x1', '25'); line.setAttribute('x2', '155');
-      line.setAttribute('y1', String(29 + f * 34)); line.setAttribute('y2', String(29 + f * 34));
-      line.setAttribute('stroke', '#334155'); line.setAttribute('stroke-width', '2');
-      svg.appendChild(line);
-    }
+    var topRow = document.createElement('div');
+    topRow.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);margin-bottom:4px;';
     for (var s = 0; s < 6; s++) {
-      var x = 25 + s * 26;
-      var sLine = document.createElementNS(ns, 'line');
-      sLine.setAttribute('x1', String(x)); sLine.setAttribute('x2', String(x));
-      sLine.setAttribute('y1', '29'); sLine.setAttribute('y2', '165');
-      sLine.setAttribute('stroke', '#64748B'); sLine.setAttribute('stroke-width', String(2.2 - s * 0.2));
-      svg.appendChild(sLine);
-
-      var val = parseInt(frets.at(s), 10);
-      if (val <= 0) {
-        var topTxt = document.createElementNS(ns, 'text');
-        topTxt.setAttribute('x', String(x)); topTxt.setAttribute('y', '18');
-        topTxt.setAttribute('text-anchor', 'middle'); topTxt.setAttribute('font-size', '13');
-        topTxt.setAttribute('font-weight', '800');
-        topTxt.setAttribute('fill', val < 0 ? '#EF4444' : '#38BDF8');
-        topTxt.textContent = val < 0 ? 'X' : 'O';
-        svg.appendChild(topTxt);
-      } else {
-        var cy = 29 + (val - 0.5) * 34;
-        var dot = document.createElementNS(ns, 'circle');
-        dot.setAttribute('cx', String(x)); dot.setAttribute('cy', String(cy));
-        dot.setAttribute('r', '11'); dot.setAttribute('fill', '#2563EB');
-        dot.setAttribute('stroke', '#FACC15'); dot.setAttribute('stroke-width', '2');
-        svg.appendChild(dot);
-
-        var fNum = document.createElementNS(ns, 'text');
-        fNum.setAttribute('x', String(x)); fNum.setAttribute('y', String(cy + 4));
-        fNum.setAttribute('text-anchor', 'middle'); fNum.setAttribute('font-size', '12');
-        fNum.setAttribute('font-weight', '800'); fNum.setAttribute('fill', '#FFFFFF');
-        fNum.textContent = fingers.at(s) || '';
-        svg.appendChild(fNum);
-      }
+      var v = parseInt(frets.at(s), 10);
+      var mk = document.createElement('div');
+      mk.style.cssText = 'text-align:center;font-size:13px;font-weight:800;color:' + (v < 0 ? '#EF4444' : v === 0 ? '#38BDF8' : 'transparent') + ';';
+      mk.textContent = v < 0 ? 'X' : v === 0 ? 'O' : '·';
+      topRow.appendChild(mk);
     }
+    board.appendChild(topRow);
+
+    var grid = document.createElement('div');
+    grid.style.cssText = 'border-top:5px solid #F8FAFC;position:relative;';
+    for (var f = 1; f <= 4; f++) {
+      var fRow = document.createElement('div');
+      fRow.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);height:36px;border-bottom:2px solid #334155;position:relative;';
+      for (var c = 0; c < 6; c++) {
+        var cell = document.createElement('div');
+        cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;';
+        var strLine = document.createElement('div');
+        strLine.style.cssText = 'position:absolute;top:0;bottom:0;left:50%;width:' + (c < 3 ? '2px' : '1.5px') + ';background:#64748B;transform:translateX(-50%);';
+        cell.appendChild(strLine);
+
+        if (parseInt(frets.at(c), 10) === f) {
+          var dot = document.createElement('div');
+          dot.style.cssText = 'position:relative;z-index:2;width:24px;height:24px;border-radius:50%;background:#2563EB;border:2px solid #FACC15;color:#FFFFFF;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;';
+          dot.textContent = fingers.at(c) || '';
+          cell.appendChild(dot);
+        }
+        fRow.appendChild(cell);
+      }
+      grid.appendChild(fRow);
+    }
+    board.appendChild(grid);
 
     chordModal.innerHTML = '';
     var card = document.createElement('div'); card.className = 'c-card';
@@ -595,10 +579,11 @@
     var btn = document.createElement('button'); btn.className = 'c-close';
     btn.textContent = wasPlayingBeforeChord ? 'Got it / Resume' : 'Close';
     btn.onclick = closeChordModal;
-    card.appendChild(title); card.appendChild(sub); card.appendChild(svg); card.appendChild(btn);
+    card.appendChild(title); card.appendChild(sub); card.appendChild(board); card.appendChild(btn);
     chordModal.appendChild(card);
     chordModal.classList.remove('hidden');
   }
+
 
   document.getElementById('viewport').addEventListener('click', function(e) {
     if (e.target && e.target.classList.contains('chord-pill')) {
