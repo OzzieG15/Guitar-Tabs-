@@ -1,0 +1,17 @@
+{
+  "name": "Ozzie's Guitar App",
+  "short_name": "Ozzie's Play App",
+  "start_url": "/Guitar-Tabs-/",
+  "scope": "/Guitar-Tabs-/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#0F172A",
+  "icons": [
+    {
+      "src": "image_4a623bff.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    }
+  ]
+}
