@@ -6,7 +6,9 @@
 <meta name="theme-color" content="#0F172A" />
 <link rel="manifest" href="manifest.json" />
 <link rel="icon" href="image_4a623bff.jpg" type="image/jpeg" />
-<title>Ozzie's Play App</title>
+<link rel="apple-touch-icon" href="image_4a623bff.jpg" />
+
+ <title>Ozzie's Play App</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body {
@@ -141,6 +143,18 @@
   .chip-btn.sec { border-color: #FACC15; color: #FDE047; }
   .m-area { flex: 1; background: #000000; border: 1px solid #334155; color: #F8FAFC; padding: 10px; border-radius: 8px; font-size: 13px; font-family: monospace; resize: none; }
   .m-save { background: #2563EB; color: #FFFFFF; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
+  #installBanner {
+    margin: 0 16px 8px; padding: 8px 12px; border-radius: 10px;
+    background: linear-gradient(90deg, #1E293B 0%, #172554 100%);
+    border: 1px solid #3B82F6; display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  }
+  .ib-text { font-size: 12px; color: #E2E8F0; font-weight: 600; line-height: 1.3; }
+  .ib-btn {
+    background: #2563EB; color: #FFFFFF; border: none; padding: 6px 12px;
+    border-radius: 7px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer;
+  }
+  .ib-x { background: transparent; border: none; color: #94A3B8; font-size: 14px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+
 </style>
 </head>
 <body>
@@ -153,7 +167,9 @@
       </div>
       <button class="btn-import" id="openImportBtn">+ Smart Builder</button>
     </div>
-    <div class="w-controls">
+        <div id="installBanner" class="hidden"></div>
+
+   <div class="w-controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search artist or song..." />
       <div class="tabs">
         <button class="tab active" data-tab="All">All</button>
@@ -590,6 +606,55 @@
       showChordDiagram(e.target.textContent.trim());
     }
   });
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(function() {});
+  }
+  var deferredPrompt = null;
+  var installBanner = document.getElementById('installBanner');
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  function showInstallBanner(mode) {
+    if (isStandalone || sessionStorage.getItem('hide_install_banner')) return;
+    installBanner.innerHTML = '';
+    var txt = document.createElement('div'); txt.className = 'ib-text';
+    txt.textContent = mode === 'android' ? 'Install Ozzie\'s Play App on your phone' : 'Save Ozzie\'s Play App to your Home Screen';
+    var btn = document.createElement('button'); btn.className = 'ib-btn';
+    btn.textContent = mode === 'android' ? 'Install App' : 'How to Save';
+    btn.onclick = function() {
+      if (mode === 'android' && deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(function() { deferredPrompt = null; installBanner.classList.add('hidden'); });
+      } else {
+        chordModal.innerHTML = '';
+        var card = document.createElement('div'); card.className = 'c-card';
+        var t = document.createElement('div'); t.className = 'c-title'; t.style.fontSize = '20px';
+        t.textContent = isIOS ? 'Install on iPhone' : 'Install on Android';
+        var s = document.createElement('div'); s.className = 'c-sub'; s.style.fontSize = '13px'; s.style.lineHeight = '1.5'; s.style.color = '#E2E8F0';
+        s.textContent = isIOS
+          ? '1. Tap the Share button (square with up arrow) at the bottom of Safari.\n2. Scroll down and tap "Add to Home Screen".\n3. Tap "Add" in the top-right corner.'
+          : '1. Tap the 3 dots (⋮) in the top-right corner of Chrome.\n2. Tap "Add to Home screen" or "Install app".\n3. Tap "Install" to add it.';
+        s.style.whiteSpace = 'pre-line';
+        var close = document.createElement('button'); close.className = 'c-close'; close.textContent = 'Got it';
+        close.onclick = function() { chordModal.classList.add('hidden'); };
+        card.appendChild(t); card.appendChild(s); card.appendChild(close);
+        chordModal.appendChild(card); chordModal.classList.remove('hidden');
+      }
+    };
+    var x = document.createElement('button'); x.className = 'ib-x'; x.textContent = '✕';
+    x.onclick = function() { sessionStorage.setItem('hide_install_banner', '1'); installBanner.classList.add('hidden'); };
+    installBanner.appendChild(txt); installBanner.appendChild(btn); installBanner.appendChild(x);
+    installBanner.classList.remove('hidden');
+  }
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showInstallBanner('android');
+  });
+  if (!isStandalone) {
+    setTimeout(function() { if (!deferredPrompt) showInstallBanner('guide'); }, 1200);
+  }
 
  renderList(); requestAnimationFrame(tick);
 })();
