@@ -314,7 +314,22 @@
     var bk = document.createElement('span'); bk.className = 'badge-key'; bk.textContent = song.key.replace(' Major', '');
     meta.appendChild(bl); meta.appendChild(bk);
     div.appendChild(left); div.appendChild(meta);
-    div.onclick = function() { launchSong(song); };
+      if (localStorage.getItem('ozzie_owner_unlocked') === '1' && customSongs.indexOf(song) !== -1) {
+      var delBtn = document.createElement('button');
+      delBtn.textContent = 'Delete';
+      delBtn.style.cssText = 'background:#7F1D1D;color:#FECACA;border:1px solid #DC2626;border-radius:7px;padding:4px 8px;font-size:11px;font-weight:700;cursor:pointer;';
+      delBtn.onclick = function(ev) {
+        ev.stopPropagation();
+        if (confirm('Delete "' + song.title + '"?')) {
+          customSongs = customSongs.filter(function(item) { return item !== song; });
+          localStorage.setItem('custom_teleprompter_songs', JSON.stringify(customSongs));
+          renderList();
+        }
+      };
+      meta.appendChild(delBtn);
+    }
+
+   div.onclick = function() { launchSong(song); };
     return div;
   }
   function parseSongData(song) {
