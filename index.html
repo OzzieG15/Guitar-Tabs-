@@ -1151,6 +1151,23 @@
     ov.appendChild(box);
     document.body.appendChild(ov);
   };
+  var hBtnLayout = document.getElementById('helpBtn');
+  if (hBtnLayout && hBtnLayout.parentNode && hBtnLayout.parentNode.parentNode) {
+    var btnGroup = hBtnLayout.parentNode;
+    var headerRow = btnGroup.parentNode;
+    headerRow.style.flexWrap = 'wrap';
+    headerRow.style.gap = '8px';
+    headerRow.style.paddingTop = '12px';
+    if (headerRow.firstElementChild) {
+      headerRow.firstElementChild.style.width = '100%';
+      headerRow.firstElementChild.style.maxWidth = '100%';
+      headerRow.firstElementChild.style.flex = '1 1 100%';
+    }
+    btnGroup.style.width = '100%';
+    btnGroup.style.justifyContent = 'flex-start';
+    btnGroup.style.flexWrap = 'wrap';
+    btnGroup.style.gap = '6px';
+  }
 
  renderList(); requestAnimationFrame(tick);
 })();
