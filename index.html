@@ -139,7 +139,8 @@
   .m-input { flex: 1; min-width: 85px; background: #1E293B; border: 1px solid #334155; color: #F8FAFC; padding: 8px 10px; border-radius: 7px; font-size: 13px; }
   .chip-bar { display: flex; gap: 5px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
   .chip-bar::-webkit-scrollbar { display: none; }
-  .chip-btn { background: #1E293B; border: 1px solid #3B82F6; color: #93C5FD; padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+  
+ .chip-btn { background: #1E293B; border: 1px solid #3B82F6; color: #93C5FD; padding: 5px 9px; border-radius: 6px; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
   .chip-btn.sec { border-color: #FACC15; color: #FDE047; }
   .m-area { flex: 1; background: #000000; border: 1px solid #334155; color: #F8FAFC; padding: 10px; border-radius: 8px; font-size: 13px; font-family: monospace; resize: none; }
   .m-save { background: #2563EB; color: #FFFFFF; border: none; padding: 11px; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; }
@@ -154,6 +155,19 @@
     border-radius: 7px; font-size: 12px; font-weight: 800; white-space: nowrap; cursor: pointer;
   }
   .ib-x { background: transparent; border: none; color: #94A3B8; font-size: 14px; font-weight: 700; cursor: pointer; padding: 2px 4px; }
+  #ownerBar {
+    margin: 0 16px 8px; padding: 8px; border-radius: 10px;
+    background: #1E293B; border: 1px solid #FACC15;
+    display: flex; gap: 6px; justify-content: space-between;
+  }
+  .owner-link {
+    flex: 1; text-align: center; text-decoration: none;
+    padding: 7px 6px; border-radius: 7px; font-size: 12px; font-weight: 800;
+    white-space: nowrap;
+  }
+  .owner-ai { background: #2563EB; color: #FFFFFF; }
+  .owner-songs { background: #16A34A; color: #FFFFFF; }
+  .owner-app { background: #FACC15; color: #0F172A; }
 
 </style>
 </head>
@@ -174,6 +188,11 @@
 
     </div>
         <div id="installBanner" class="hidden"></div>
+        <div id="ownerBar" class="hidden">
+          <a href="https://share.gemini.google/nneboUYpQDor" target="_blank" rel="noopener noreferrer" class="owner-link owner-ai">AI Helper</a>
+          <a href="https://github.com/OzzieG15/Guitar-Tabs-/edit/main/songs.js" target="_blank" rel="noopener noreferrer" class="owner-link owner-songs">Edit Songs</a>
+          <a href="https://github.com/OzzieG15/Guitar-Tabs-/edit/main/index.html" target="_blank" rel="noopener noreferrer" class="owner-link owner-app">Edit App</a>
+        </div>
 
    <div class="w-controls">
       <input type="text" id="searchInput" class="search-input" placeholder="Search artist or song..." />
@@ -741,6 +760,8 @@
       if (isOwner) { modal.classList.remove('hidden'); }
       else { reqModal.classList.remove('hidden'); }
     };
+      var ownerBar = document.getElementById('ownerBar');
+    if (ownerBar) ownerBar.classList.toggle('hidden', !isOwner);
   }
   syncOwnerUI();
 
