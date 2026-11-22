@@ -871,6 +871,44 @@
   if (songListEl && songListEl.parentNode && recentSongs.length) {
     songListEl.parentNode.insertBefore(recentBar, songListEl);
   }
+  var helpBtnEl = document.getElementById('helpBtn');
+  if (helpBtnEl && helpBtnEl.parentNode) {
+    var shareBtn = document.createElement('button');
+    shareBtn.type = 'button';
+    shareBtn.className = 'btn-import';
+    shareBtn.textContent = 'Share';
+    shareBtn.style.cssText = 'background:#1E293B;border-color:#475569;color:#F8FAFC;padding:7px 10px;';
+    shareBtn.onclick = function() {
+          var appUrl = window.location.origin + window.location.pathname;
+            var qrSrc = 'https:' + '//' + 'api.' + 'qrserver.' + 'com/v1/create-qr-code/?size=220x220&margin=10&data=' + encodeURIComponent(appUrl);
+
+      var ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;inset:0;background:rgba(2,6,23,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;';
+      ov.onclick = function(e) { if (e.target === ov) ov.remove(); };
+      var box = document.createElement('div');
+      box.style.cssText = 'background:#0F172A;border:1px solid #334155;border-radius:16px;padding:20px;max-width:320px;width:100%;text-align:center;color:#F8FAFC;';
+      box.innerHTML = '<div style="font-size:18px;font-weight:800;margin-bottom:4px;">Share Ozzie\'s Play App</div>' +
+        '<div style="font-size:13px;color:#94A3B8;margin-bottom:14px;">Scan with any phone camera or tap below to text the link</div>' +
+        '<div style="background:#FFFFFF;padding:10px;border-radius:12px;display:inline-block;margin-bottom:14px;">' +
+        '<img src="' + qrSrc + '" alt="QR Code" style="width:200px;height:200px;display:block;" /></div>' +
+        '<div style="display:flex;gap:8px;justify-content:center;">' +
+        '<button id="doNativeShareBtn" type="button" style="flex:1;background:#2563EB;color:#FFFFFF;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:14px;cursor:pointer;">Share Link</button>' +
+        '<button id="closeShareModalBtn" type="button" style="background:#1E293B;color:#CBD5E1;border:1px solid #334155;border-radius:10px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;">Close</button>' +
+        '</div>';
+      ov.appendChild(box);
+      document.body.appendChild(ov);
+      document.getElementById('closeShareModalBtn').onclick = function() { ov.remove(); };
+      document.getElementById('doNativeShareBtn').onclick = function() {
+        if (navigator.share) {
+          navigator.share({ title: "Ozzie's Play App", text: "Check out Ozzie's Play App for guitar chords & lyrics!", url: appUrl }).catch(function(){});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(appUrl);
+          this.textContent = 'Link Copied!';
+        }
+      };
+    };
+    helpBtnEl.parentNode.insertBefore(shareBtn, helpBtnEl);
+  }
 
  renderList(); requestAnimationFrame(tick);
 })();
