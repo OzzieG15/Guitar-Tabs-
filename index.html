@@ -984,6 +984,37 @@
     };
     helpBtnEl.parentNode.insertBefore(shareBtn, helpBtnEl);
   }
+  var origLaunchSong = launchSong;
+  launchSong = function(song) {
+    origLaunchSong(song);
+    if (!location.hash || location.hash !== '#player') {
+      history.pushState({ view: 'player' }, '', '#player');
+    }
+  };
+
+  var backBtnEl = document.getElementById('backBtn');
+  if (backBtnEl) {
+    var origBackClick = backBtnEl.onclick;
+    backBtnEl.onclick = function(e) {
+      if (origBackClick) origBackClick.call(this, e);
+      if (location.hash === '#player') {
+        history.replaceState({ view: 'list' }, '', location.pathname + location.search);
+      }
+    };
+  }
+
+  window.addEventListener('popstate', function() {
+    var cm = document.getElementById('chordModal');
+    if (cm && !cm.classList.contains('hidden')) {
+      closeChordModal();
+      history.pushState({ view: 'player' }, '', '#player');
+      return;
+    }
+    var ps = document.getElementById('playerScreen');
+    if (ps && !ps.classList.contains('hidden') && backBtnEl) {
+      backBtnEl.click();
+    }
+  });
 
  renderList(); requestAnimationFrame(tick);
 })();
