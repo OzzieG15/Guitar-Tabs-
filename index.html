@@ -166,7 +166,11 @@
 
         <div class="w-sub" id="songCountSub">Select a song to start</div>
       </div>
-            <button class="btn-import" id="openImportBtn">+ Request Song</button>
+                  <div style="display:flex;gap:6px;align-items:center;">
+        <button class="btn-import" id="helpBtn" style="padding:7px 10px;">?</button>
+        <button class="btn-import" id="openImportBtn">+ Request Song</button>
+      </div>
+
 
     </div>
         <div id="installBanner" class="hidden"></div>
@@ -734,6 +738,52 @@
       }
     }
   };
+  function showHelpGuide() {
+    chordModal.innerHTML = '';
+    var card = document.createElement('div');
+    card.className = 'c-card';
+    card.style.maxWidth = '330px';
+    card.style.textAlign = 'left';
+
+    var t = document.createElement('div');
+    t.className = 'c-title';
+    t.style.fontSize = '20px';
+    t.style.textAlign = 'center';
+    t.textContent = 'How to Use Ozzie\'s Play App';
+
+    var list = document.createElement('div');
+    list.style.cssText = 'font-size:13px;line-height:1.55;color:#E2E8F0;display:flex;flex-direction:column;gap:9px;margin-top:8px;';
+    var tips = [
+      '• Tap Any Blue Chord Button (G, D7, E7, etc.) while playing to pause the screen and view a guitar fretboard diagram with finger numbers.',
+      '• Tap the Yellow "Key" Button in the top-right corner of a song to switch keys (G, A, D, or E) automatically.',
+      '• Jump Sections or Adjust Pace using the section buttons and speed selector (0.75x–1.5x) along the bottom bar.',
+      '• Tap "+ Request Song" at the top of the home screen to send a song request directly to Ozzie.'
+    ];
+    tips.forEach(function(item) {
+      var p = document.createElement('div');
+      p.textContent = item;
+      list.appendChild(p);
+    });
+
+    var close = document.createElement('button');
+    close.className = 'c-close';
+    close.textContent = 'Got It';
+    close.onclick = function() {
+      localStorage.setItem('ozzie_seen_help', '1');
+      chordModal.classList.add('hidden');
+    };
+
+    card.appendChild(t);
+    card.appendChild(list);
+    card.appendChild(close);
+    chordModal.appendChild(card);
+    chordModal.classList.remove('hidden');
+  }
+
+  document.getElementById('helpBtn').onclick = showHelpGuide;
+  if (!localStorage.getItem('ozzie_seen_help')) {
+    setTimeout(showHelpGuide, 700);
+  }
 
  renderList(); requestAnimationFrame(tick);
 })();
