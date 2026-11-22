@@ -433,14 +433,31 @@
       var rowEl = document.createElement('div'); rowEl.className = 'row op-' + idx;
       var bar = document.createElement('div'); bar.className = idx === 0 ? 'active-bar' : 'active-bar spacer';
       var content = document.createElement('div'); content.className = 'row-content';
-            if (r.chords && r.chords.length) {
+              if (r.chords && r.chords.length) {
         var cr = document.createElement('div'); cr.className = 'chord-row';
         cr.style.marginTop = '0'; cr.style.marginBottom = '5px';
         r.chords.forEach(function(c) {
-          var p = document.createElement('span'); p.className = 'chord-pill';
-          p.textContent = transposeChord(c, transposeSteps);
+          var p = document.createElement('button');
+          p.type = 'button';
+          p.className = 'chord-pill';
+          p.style.cssText = 'cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;border:none;font-family:inherit;';
+          var chordLabel = transposeChord(c, transposeSteps);
+          p.textContent = chordLabel;
+          p.onpointerdown = function(ev) {
+            ev.stopPropagation();
+            if (isPlaying) {
+              isPlaying = false;
+              var pp = document.getElementById('playPauseBtn');
+              if (pp) pp.textContent = 'Play';
+            }
+          };
+          p.onclick = function(ev) {
+            ev.stopPropagation();
+            if (typeof showChordDiagram === 'function') { showChordDiagram(chordLabel); }
+          };
           cr.appendChild(p);
         });
+
         content.appendChild(cr);
       }
       var txt = document.createElement('div'); txt.className = 'lyric-text'; txt.textContent = r.text;
