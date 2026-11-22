@@ -833,6 +833,27 @@
   if (!localStorage.getItem('ozzie_seen_help')) {
     setTimeout(showHelpGuide, 700);
   }
+  var recentBar = document.createElement('div');
+  recentBar.style.cssText = 'display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 14px;background:#0F172A;border-bottom:1px solid #1E293B;scrollbar-width:none;';
+  var recentLabel = document.createElement('span');
+  recentLabel.textContent = 'NEW:';
+  recentLabel.style.cssText = 'background:#059669;color:#ECFDF5;font-size:10px;font-weight:800;padding:3px 6px;border-radius:5px;letter-spacing:0.5px;flex-shrink:0;';
+  recentBar.appendChild(recentLabel);
+
+  var recentSongs = (Array.isArray(window.VERIFIED_SONGS) ? window.VERIFIED_SONGS : []).slice(-3).reverse();
+  recentSongs.forEach(function(rs) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.textContent = rs.title + ' — ' + rs.artist;
+    btn.style.cssText = 'background:#1E293B;color:#E2E8F0;border:1px solid #334155;border-radius:7px;padding:4px 9px;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;flex-shrink:0;';
+    btn.onclick = function() { launchSong(rs); };
+    recentBar.appendChild(btn);
+  });
+
+  var songListEl = document.getElementById('songList');
+  if (songListEl && songListEl.parentNode && recentSongs.length) {
+    songListEl.parentNode.insertBefore(recentBar, songListEl);
+  }
 
  renderList(); requestAnimationFrame(tick);
 })();
