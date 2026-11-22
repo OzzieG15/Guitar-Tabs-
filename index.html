@@ -162,10 +162,12 @@
   <div id="welcomeScreen">
     <div class="w-header">
       <div>
-        <div class="w-title">Ozzie's Play App</div>
+                <div class="w-title" id="appTitle">Ozzie's Play App</div>
+
         <div class="w-sub" id="songCountSub">Select a song to start</div>
       </div>
-      <button class="btn-import" id="openImportBtn">+ Smart Builder</button>
+            <button class="btn-import" id="openImportBtn">+ Request Song</button>
+
     </div>
         <div id="installBanner" class="hidden"></div>
 
@@ -655,6 +657,83 @@
   if (!isStandalone) {
     setTimeout(function() { if (!deferredPrompt) showInstallBanner('guide'); }, 1200);
   }
+  var isOwner = localStorage.getItem('ozzie_owner_unlocked') === '1';
+  var openImportBtn = document.getElementById('openImportBtn');
+  var reqModal = document.createElement('div');
+  reqModal.id = 'reqModal';
+  reqModal.className = 'hidden';
+  reqModal.style.cssText = 'position:absolute;inset:0;background:rgba(2,6,23,0.97);z-index:55;display:flex;flex-direction:column;justify-content:center;padding:20px;gap:12px;';
+
+  var rCard = document.createElement('div');
+  rCard.style.cssText = 'background:#0F172A;border:1px solid #334155;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;';
+  var rHead = document.createElement('div'); rHead.className = 'm-head';
+  var rTitle = document.createElement('div'); rTitle.className = 'm-title'; rTitle.textContent = 'Request a Song';
+  var rClose = document.createElement('button'); rClose.className = 'm-close'; rClose.textContent = '✕';
+  rClose.onclick = function() { reqModal.classList.add('hidden'); };
+  rHead.appendChild(rTitle); rHead.appendChild(rClose);
+
+  var rSong = document.createElement('input'); rSong.className = 'm-input'; rSong.placeholder = 'Song Title (required)';
+  var rArtist = document.createElement('input'); rArtist.className = 'm-input'; rArtist.placeholder = 'Artist Name (required)';
+  var rNote = document.createElement('input'); rNote.className = 'm-input'; rNote.placeholder = 'Optional note (e.g., version or name)';
+  var rStatus = document.createElement('div'); rStatus.style.cssText = 'font-size:12px;color:#38BDF8;min-height:16px;text-align:center;';
+  var rSend = document.createElement('button'); rSend.className = 'm-save'; rSend.textContent = 'Send Song Request';
+
+  rSend.onclick = function() {
+    var st = rSong.value.trim(), ar = rArtist.value.trim();
+    if (!st || !ar) { rStatus.style.color = '#FCA5A5'; rStatus.textContent = 'Please enter both Song Title and Artist Name.'; return; }
+    rSend.disabled = true; rSend.textContent = 'Sending...'; rStatus.textContent = '';
+    var ep = ['https:/', 'formspree.io', 'f', 'mzerjzvl'].join('/');
+    fetch(ep, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ song: st, artist: ar, note: rNote.value.trim() })
+    }).then(function(res) {
+      if (res.ok) {
+        rStatus.style.color = '#4ADE80'; rStatus.textContent = 'Request sent! Ozzie will review it soon.';
+        rSong.value = ''; rArtist.value = ''; rNote.value = '';
+        setTimeout(function() { reqModal.classList.add('hidden'); rStatus.textContent = ''; }, 1600);
+      } else { throw new Error('err'); }
+    }).catch(function() {
+      rStatus.style.color = '#FCA5A5'; rStatus.textContent = 'Could not send right now. Please try again.';
+    }).finally(function() { rSend.disabled = false; rSend.textContent = 'Send Song Request'; });
+  };
+
+  rCard.appendChild(rHead); rCard.appendChild(rSong); rCard.appendChild(rArtist);
+  rCard.appendChild(rNote); rCard.appendChild(rStatus); rCard.appendChild(rSend);
+  reqModal.appendChild(rCard);
+  document.getElementById('app').appendChild(reqModal);
+
+  function syncOwnerUI() {
+    openImportBtn.textContent = isOwner ? '+ Smart Builder' : '+ Request Song';
+    openImportBtn.onclick = function() {
+      if (isOwner) { modal.classList.remove('hidden'); }
+      else { reqModal.classList.remove('hidden'); }
+    };
+  }
+  syncOwnerUI();
+
+  var titleTaps = 0, tapTimer = null;
+  document.getElementById('appTitle').onclick = function() {
+    titleTaps++;
+    clearTimeout(tapTimer);
+    tapTimer = setTimeout(function() { titleTaps = 0; }, 1500);
+    if (titleTaps >= 5) {
+      titleTaps = 0;
+      if (isOwner) {
+        if (confirm('Lock Smart Builder back to public Request Song mode?')) {
+          isOwner = false; localStorage.removeItem('ozzie_owner_unlocked'); syncOwnerUI();
+        }
+      } else {
+        var pin = prompt('Enter Owner PIN:');
+        if (pin === '1515') {
+          isOwner = true; localStorage.setItem('ozzie_owner_unlocked', '1'); syncOwnerUI();
+          alert('Owner mode unlocked! + Smart Builder is active.');
+        } else if (pin !== null) {
+          alert('Incorrect PIN.');
+        }
+      }
+    }
+  };
 
  renderList(); requestAnimationFrame(tick);
 })();
