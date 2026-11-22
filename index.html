@@ -312,8 +312,9 @@
     var meta = document.createElement('div'); meta.className = 'song-meta';
     var bl = document.createElement('span'); bl.className = 'badge-lang'; bl.textContent = song.lang === 'English' ? 'EN' : 'ES';
     var bk = document.createElement('span'); bk.className = 'badge-key'; bk.textContent = song.key.replace(' Major', '');
-    meta.appendChild(bl); meta.appendChild(bk);
+        meta.appendChild(bl); meta.appendChild(bk);
     div.appendChild(left); div.appendChild(meta);
+
       if (localStorage.getItem('ozzie_owner_unlocked') === '1' && customSongs.indexOf(song) !== -1) {
       var delBtn = document.createElement('button');
       delBtn.textContent = 'Delete';
