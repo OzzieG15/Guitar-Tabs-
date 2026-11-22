@@ -587,18 +587,44 @@
     saved.push(newSong); localStorage.setItem('custom_teleprompter_songs', JSON.stringify(saved));
     ALL_SONGS.push(newSong); modal.classList.add('hidden'); renderList();
   };
-    var CHORD_SHAPES = {
-    'G':  { s: '3,2,0,0,0,3', f: '2,1,,,,3', tip: '3rd fret low E (2), 2nd fret A (1), 3rd fret high E (3)' },
-    'C':  { s: '-1,3,2,0,1,0', f: ',3,2,,1,', tip: 'Mute low E; ring (3) on A3, middle (2) on D2, index (1) on B1' },
-    'D':  { s: '-1,-1,0,2,3,2', f: ',,,1,3,2', tip: 'Mute E & A; index (1) on G2, ring (3) on B3, middle (2) on high E2' },
-    'D7': { s: '-1,-1,0,2,1,2', f: ',,,2,1,3', tip: 'Mute E & A; middle (2) on G2, index (1) on B1, ring (3) on high E2' },
-    'A':  { s: '-1,0,2,2,2,0', f: ',,1,2,3,', tip: 'Mute low E; fingers 1, 2, 3 stacked on 2nd fret of D, G, B' },
-    'A7': { s: '-1,0,2,0,2,0', f: ',,2,,3,', tip: 'Mute low E; middle (2) on D2, ring (3) on B2, open G string' },
-    'E':  { s: '0,2,2,1,0,0', f: ',2,3,1,,', tip: 'Middle (2) on A2, ring (3) on D2, index (1) on G1; strum all 6' },
-    'E7': { s: '0,2,0,1,0,0', f: ',2,,1,,', tip: 'Middle (2) on A2, index (1) on G1, open D string; strum all 6' },
-    'B7': { s: '-1,2,1,2,0,2', f: ',2,1,3,,4', tip: 'Mute low E; A2 (2), D1 (1), G2 (3), open B, high E2 (4)' }
+       var CHORD_SHAPES = {
+    'G':   { s: '3,2,0,0,0,3', f: '2,1,,,,3', u: '0,2,3,2', uf: ',1,3,2' },
+    'G7':  { s: '3,2,0,0,0,1', f: '3,2,,,,1', u: '0,2,1,2', uf: ',2,1,3' },
+    'C':   { s: '-1,3,2,0,1,0', f: ',3,2,,1,', u: '0,0,0,3', uf: ',,,3' },
+    'C7':  { s: '-1,3,2,3,1,0', f: ',3,2,4,1,', u: '0,0,0,1', uf: ',,,1' },
+    'D':   { s: '-1,-1,0,2,3,2', f: ',,,1,3,2', u: '2,2,2,0', uf: '1,2,3,' },
+    'D7':  { s: '-1,-1,0,2,1,2', f: ',,,2,1,3', u: '2,2,2,3', uf: '1,1,1,2' },
+    'A':   { s: '-1,0,2,2,2,0', f: ',,1,2,3,', u: '2,1,0,0', uf: '2,1,,' },
+    'A7':  { s: '-1,0,2,0,2,0', f: ',,2,,3,', u: '0,1,0,0', uf: ',1,,' },
+    'E':   { s: '0,2,2,1,0,0', f: ',2,3,1,,', u: '4,4,4,2', uf: '2,3,4,1' },
+    'E7':  { s: '0,2,0,1,0,0', f: ',2,,1,,', u: '1,2,0,2', uf: '1,2,,3' },
+    'B7':  { s: '-1,2,1,2,0,2', f: ',2,1,3,,4', u: '2,3,2,2', uf: '1,2,1,1' },
+    'B':   { s: '-1,2,4,4,4,2', f: ',1,2,3,4,1', u: '4,3,2,2', uf: '3,2,1,1' },
+    'F':   { s: '1,3,3,2,1,1', f: '1,3,4,2,1,1', u: '2,0,1,0', uf: '2,,1,' },
+    'F7':  { s: '1,3,1,2,1,1', f: '1,3,1,2,1,1', u: '2,3,1,0', uf: '2,3,1,' },
+    'Bb':  { s: '-1,1,3,3,3,1', f: ',1,2,3,4,1', u: '3,2,1,1', uf: '3,2,1,1' },
+    'A#':  { s: '-1,1,3,3,3,1', f: ',1,2,3,4,1', u: '3,2,1,1', uf: '3,2,1,1' },
+    'Eb':  { s: '-1,-1,1,3,4,3', f: ',,1,2,4,3', u: '0,3,3,1', uf: ',2,3,1' },
+    'D#':  { s: '-1,-1,1,3,4,3', f: ',,1,2,4,3', u: '0,3,3,1', uf: ',2,3,1' },
+    'Ab':  { s: '4,6,6,5,4,4', f: '1,3,4,2,1,1', u: '5,3,4,3', uf: '4,1,3,2' },
+    'G#':  { s: '4,6,6,5,4,4', f: '1,3,4,2,1,1', u: '5,3,4,3', uf: '4,1,3,2' },
+    'F#':  { s: '2,4,4,3,2,2', f: '1,3,4,2,1,1', u: '3,1,2,1', uf: '3,1,2,1' },
+    'Gb':  { s: '2,4,4,3,2,2', f: '1,3,4,2,1,1', u: '3,1,2,1', uf: '3,1,2,1' },
+    'C#':  { s: '-1,4,6,6,6,4', f: ',1,2,3,4,1', u: '1,1,1,4', uf: '1,1,1,4' },
+    'Db':  { s: '-1,4,6,6,6,4', f: ',1,2,3,4,1', u: '1,1,1,4', uf: '1,1,1,4' },
+    'Em':  { s: '0,2,2,0,0,0', f: ',2,3,,,', u: '0,4,3,2', uf: ',3,2,1' },
+    'Am':  { s: '-1,0,2,2,1,0', f: ',,2,3,1,', u: '2,0,0,0', uf: '2,,,' },
+    'Dm':  { s: '-1,-1,0,2,3,1', f: ',,,2,3,1', u: '2,2,1,0', uf: '2,3,1,' },
+    'Bm':  { s: '-1,2,4,4,3,2', f: ',1,3,4,2,1', u: '4,2,2,2', uf: '3,1,1,1' },
+    'F#m': { s: '2,4,4,2,2,2', f: '1,3,4,1,1,1', u: '2,1,2,0', uf: '2,1,3,' },
+    'Gbm': { s: '2,4,4,2,2,2', f: '1,3,4,1,1,1', u: '2,1,2,0', uf: '2,1,3,' },
+    'C#m': { s: '-1,4,6,6,5,4', f: ',1,3,4,2,1', u: '1,4,4,4', uf: '1,2,3,4' },
+    'Dbm': { s: '-1,4,6,6,5,4', f: ',1,3,4,2,1', u: '1,4,4,4', uf: '1,2,3,4' },
+    'Gm':  { s: '3,5,5,3,3,3', f: '1,3,4,1,1,1', u: '0,2,3,1', uf: ',2,3,1' },
+    'Cm':  { s: '-1,3,5,5,4,3', f: ',1,3,4,2,1', u: '0,3,3,3', uf: ',1,2,3' }
   };
 
+  var chordInst = localStorage.getItem('ozzie_inst') || 'guitar';
   var chordModal = document.getElementById('chordModal');
   var wasPlayingBeforeChord = false;
   chordModal.onclick = function(e) { if (e.target === chordModal) closeChordModal(); };
@@ -610,45 +636,59 @@
     }
   }
 
-     function showChordDiagram(name) {
-    var info = CHORD_SHAPES[name];
+  function showChordDiagram(name) {
+    var cleanName = (name || '').trim();
+    var info = CHORD_SHAPES[cleanName];
     if (!info) return;
-    wasPlayingBeforeChord = isPlaying;
+    if (!chordModal.classList.contains('hidden')) {} else { wasPlayingBeforeChord = isPlaying; }
     if (isPlaying) {
       isPlaying = false;
       document.getElementById('playPauseBtn').textContent = 'Play';
     }
-    var frets = info.s.split(','), fingers = info.f.split(',');
+    var isUke = (chordInst === 'ukulele');
+    var numStr = isUke ? 4 : 6;
+    var rawS = isUke ? info.u : info.s;
+    var rawF = isUke ? info.uf : info.f;
+    var frets = rawS.split(','), fingers = rawF.split(',');
+    var maxFret = 4;
+    frets.forEach(function(fv) { var n = parseInt(fv, 10); if (n > maxFret) maxFret = n; });
+    var startFret = maxFret > 4 ? maxFret - 3 : 1;
 
     var board = document.createElement('div');
-    board.style.cssText = 'background:#020617;border:1px solid #334155;border-radius:12px;padding:12px 14px 14px;margin:8px auto 0;width:210px;';
+    board.style.cssText = 'background:#0F172A;border:1px solid #334155;border-radius:12px;padding:12px;margin:10px auto;max-width:' + (isUke ? '180px' : '220px') + ';';
 
     var topRow = document.createElement('div');
-    topRow.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);margin-bottom:4px;';
-    for (var s = 0; s < 6; s++) {
+    topRow.style.cssText = 'display:grid;grid-template-columns:repeat(' + numStr + ',1fr);margin-bottom:4px;font-size:11px;font-weight:800;color:#94A3B8;';
+    for (var s = 0; s < numStr; s++) {
       var v = parseInt(frets.at(s), 10);
       var mk = document.createElement('div');
-      mk.style.cssText = 'text-align:center;font-size:13px;font-weight:800;color:' + (v < 0 ? '#EF4444' : v === 0 ? '#38BDF8' : 'transparent') + ';';
-      mk.textContent = v < 0 ? 'X' : v === 0 ? 'O' : '·';
+      mk.style.cssText = 'text-align:center;';
+      mk.textContent = v < 0 ? 'X' : v === 0 ? 'O' : '';
       topRow.appendChild(mk);
     }
     board.appendChild(topRow);
 
     var grid = document.createElement('div');
-    grid.style.cssText = 'border-top:5px solid #F8FAFC;position:relative;';
-    for (var f = 1; f <= 4; f++) {
+    grid.style.cssText = 'border-top:' + (startFret === 1 ? '5px solid #E2E8F0' : '2px dashed #64748B') + ';position:relative;';
+    if (startFret > 1) {
+      var frLbl = document.createElement('div');
+      frLbl.textContent = startFret + 'fr';
+      frLbl.style.cssText = 'position:absolute;left:-26px;top:6px;font-size:11px;font-weight:800;color:#FBBF24;';
+      grid.appendChild(frLbl);
+    }
+    for (var f = startFret; f < startFret + 4; f++) {
       var fRow = document.createElement('div');
-      fRow.style.cssText = 'display:grid;grid-template-columns:repeat(6,1fr);height:36px;border-bottom:2px solid #334155;position:relative;';
-      for (var c = 0; c < 6; c++) {
+      fRow.style.cssText = 'display:grid;grid-template-columns:repeat(' + numStr + ',1fr);height:32px;border-bottom:2px solid #475569;';
+      for (var c = 0; c < numStr; c++) {
         var cell = document.createElement('div');
         cell.style.cssText = 'position:relative;display:flex;align-items:center;justify-content:center;';
         var strLine = document.createElement('div');
-        strLine.style.cssText = 'position:absolute;top:0;bottom:0;left:50%;width:' + (c < 3 ? '2px' : '1.5px') + ';background:#64748B;transform:translateX(-50%);';
+        strLine.style.cssText = 'position:absolute;top:0;bottom:0;width:2px;background:#64748B;';
         cell.appendChild(strLine);
 
         if (parseInt(frets.at(c), 10) === f) {
           var dot = document.createElement('div');
-          dot.style.cssText = 'position:relative;z-index:2;width:24px;height:24px;border-radius:50%;background:#2563EB;border:2px solid #FACC15;color:#FFFFFF;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;';
+          dot.style.cssText = 'position:relative;z-index:2;width:20px;height:20px;border-radius:50%;background:#3B82F6;color:#FFFFFF;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;';
           dot.textContent = fingers.at(c) || '';
           cell.appendChild(dot);
         }
@@ -658,18 +698,53 @@
     }
     board.appendChild(grid);
 
+    var strNames = document.createElement('div');
+    strNames.style.cssText = 'display:grid;grid-template-columns:repeat(' + numStr + ',1fr);margin-top:4px;font-size:10px;font-weight:700;color:#64748B;';
+    (isUke ? ['G','C','E','A'] : ['E','A','D','G','B','e']).forEach(function(sn) {
+      var d = document.createElement('div'); d.style.textAlign = 'center'; d.textContent = sn; strNames.appendChild(d);
+    });
+    board.appendChild(strNames);
+
     chordModal.innerHTML = '';
-    var card = document.createElement('div'); card.className = 'c-card';
-    var title = document.createElement('div'); title.className = 'c-title'; title.textContent = name + ' Chord';
-    var sub = document.createElement('div'); sub.className = 'c-sub'; sub.textContent = info.tip;
-    var btn = document.createElement('button'); btn.className = 'c-close';
-    btn.textContent = wasPlayingBeforeChord ? 'Got it / Resume' : 'Close';
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#1E293B;border:1px solid #475569;border-radius:16px;padding:18px;max-width:290px;width:90%;text-align:center;color:#F8FAFC;';
+
+    var toggleRow = document.createElement('div');
+    toggleRow.style.cssText = 'display:flex;gap:6px;justify-content:center;margin-bottom:10px;';
+    ['guitar', 'ukulele'].forEach(function(inst) {
+      var tb = document.createElement('button');
+      tb.type = 'button';
+      tb.textContent = inst === 'guitar' ? 'Guitar' : 'Ukulele';
+      var active = chordInst === inst;
+      tb.style.cssText = 'padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ' + (active ? '#3B82F6' : '#334155') + ';background:' + (active ? '#2563EB' : '#0F172A') + ';color:#FFFFFF;';
+      tb.onclick = function() {
+        chordInst = inst;
+        localStorage.setItem('ozzie_inst', inst);
+        showChordDiagram(cleanName);
+      };
+      toggleRow.appendChild(tb);
+    });
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:22px;font-weight:800;margin-bottom:2px;';
+    title.textContent = cleanName + (isUke ? ' (Ukulele)' : ' (Guitar)');
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:12px;color:#94A3B8;margin-bottom:6px;';
+    sub.textContent = 'Numbers = finger positions (1=Index, 2=Middle, 3=Ring, 4=Pinky)';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.style.cssText = 'margin-top:10px;width:100%;background:#2563EB;color:#FFFFFF;border:none;border-radius:10px;padding:10px;font-weight:700;font-size:14px;cursor:pointer;';
+    btn.textContent = wasPlayingBeforeChord ? 'Got It (Resume)' : 'Got It';
     btn.onclick = closeChordModal;
-    card.appendChild(title); card.appendChild(sub); card.appendChild(board); card.appendChild(btn);
+
+    card.appendChild(toggleRow);
+    card.appendChild(title);
+    card.appendChild(sub);
+    card.appendChild(board);
+    card.appendChild(btn);
     chordModal.appendChild(card);
     chordModal.classList.remove('hidden');
   }
-
 
   document.getElementById('viewport').addEventListener('click', function(e) {
     if (e.target && e.target.classList.contains('chord-pill')) {
