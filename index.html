@@ -215,7 +215,8 @@
   <div id="chordModal" class="hidden"></div>
 
 </div>
-<script src="songs.js"></script>
+  <script>document.write('<script src="songs.js?v=' + Date.now() + '"><\/script>');</script>
+
 <script>
 (function() {
   var custom = JSON.parse(localStorage.getItem('custom_teleprompter_songs') || '[]');
