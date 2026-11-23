@@ -984,11 +984,28 @@
     };
     helpBtnEl.parentNode.insertBefore(shareBtn, helpBtnEl);
   }
-  var origLaunchSong = launchSong;
+   var origLaunchSong = launchSong;
   launchSong = function(song) {
     origLaunchSong(song);
-    if (!location.hash || location.hash !== '#player') {
+    if (location.hash !== '#player') {
       history.pushState({ view: 'player' }, '', '#player');
+    }
+  };
+
+  var origShowChord = showChordDiagram;
+  showChordDiagram = function(name) {
+    var wasHidden = chordModal.classList.contains('hidden');
+    origShowChord(name);
+    if (wasHidden && !chordModal.classList.contains('hidden') && location.hash !== '#modal') {
+      history.pushState({ view: 'modal' }, '', '#modal');
+    }
+  };
+
+  var origCloseChord = closeChordModal;
+  closeChordModal = function() {
+    origCloseChord();
+    if (location.hash === '#modal') {
+      history.back();
     }
   };
 
@@ -997,24 +1014,25 @@
     var origBackClick = backBtnEl.onclick;
     backBtnEl.onclick = function(e) {
       if (origBackClick) origBackClick.call(this, e);
-      if (location.hash === '#player') {
-        history.replaceState({ view: 'list' }, '', location.pathname + location.search);
+      if (location.hash === '#player' || location.hash === '#modal') {
+        history.back();
       }
     };
   }
 
   window.addEventListener('popstate', function() {
-    var cm = document.getElementById('chordModal');
-    if (cm && !cm.classList.contains('hidden')) {
-      closeChordModal();
-      history.pushState({ view: 'player' }, '', '#player');
+    if (!chordModal.classList.contains('hidden')) {
+      origCloseChord();
       return;
     }
-    var ps = document.getElementById('playerScreen');
-    if (ps && !ps.classList.contains('hidden') && backBtnEl) {
-      backBtnEl.click();
+    if (!playerScreen.classList.contains('hidden')) {
+      isPlaying = false;
+      currentSong = null;
+      playerScreen.classList.add('hidden');
+      welcomeScreen.classList.remove('hidden');
     }
   });
+
   var cashTag = 'ozzgm';
   function openCashAppTip() {
     var tipUrl = 'https:' + '//' + 'cash.' + 'app/$' + cashTag;
@@ -1202,9 +1220,9 @@
         icon.className = 'oz-pick-zoom';
         setTimeout(function() {
           icon.className = 'oz-pick-idle';
-          var pool = Array.isArray(window.VERIFIED_SONGS) ? window.VERIFIED_SONGS : [];
-          if (typeof activeLang !== 'undefined' && (activeLang === 'English' || activeLang === 'Spanish')) {
-            var filtered = pool.filter(function(s) { return s.lang === activeLang; });
+          var pool = Array.isArray(ALL_SONGS) && ALL_SONGS.length ? ALL_SONGS.slice() : (Array.isArray(window.VERIFIED_SONGS) ? window.VERIFIED_SONGS.slice() : []);
+          if (typeof activeTab !== 'undefined' && (activeTab === 'English' || activeTab === 'Spanish')) {
+            var filtered = pool.filter(function(s) { return s.lang === activeTab; });
             if (filtered.length) pool = filtered;
           }
           if (pool.length) {
@@ -1213,7 +1231,7 @@
           }
         }, 620);
       };
-      headerRow.firstElementChild.appendChild(rndBtn);
+ headerRow.firstElementChild.appendChild(rndBtn);
     }
 
     btnGroup.style.width = '100%';
