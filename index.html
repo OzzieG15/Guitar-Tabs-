@@ -406,10 +406,10 @@
     transposeSteps = 0;
     var parsed = parseSongData(song);
     parsedRows = parsed.rows; sections = parsed.sections; currentSong.totalSec = parsed.totalSec;
-    elapsed = 0; isPlaying = true; lastTick = performance.now();
+    elapsed = 0; isPlaying = false; lastTick = performance.now();
     document.getElementById('backBtn').textContent = song.title + ' — ' + song.artist + ' ▾';
     updateKeyPill();
-    document.getElementById('playPauseBtn').textContent = 'Pause';
+    document.getElementById('playPauseBtn').textContent = 'Play';
     welcomeScreen.classList.add('hidden'); playerScreen.classList.remove('hidden');
     renderPlayer();
   }
@@ -1283,15 +1283,18 @@
       }
     }
     paintInstBtns();
-
     document.getElementById('ozPickGtr').onclick = function() {
       ozInstChoice = 'guitar';
+      chordInst = 'guitar';
       localStorage.setItem('oz_inst_choice', 'guitar');
+      localStorage.setItem('ozzie_inst', 'guitar');
       paintInstBtns();
     };
     document.getElementById('ozPickUke').onclick = function() {
       ozInstChoice = 'ukulele';
+      chordInst = 'ukulele';
       localStorage.setItem('oz_inst_choice', 'ukulele');
+      localStorage.setItem('ozzie_inst', 'ukulele');
       paintInstBtns();
     };
 
