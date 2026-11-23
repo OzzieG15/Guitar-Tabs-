@@ -1168,6 +1168,104 @@
     btnGroup.style.flexWrap = 'wrap';
     btnGroup.style.gap = '6px';
   }
+  var spinStyle = document.createElement('style');
+  spinStyle.textContent = '@keyframes ozPickIdle{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(6deg) scale(1.04)}}' +
+    '@keyframes ozPickZoom{0%{transform:rotate(0deg) scale(1);opacity:1}70%{transform:rotate(540deg) scale(2.8);opacity:1}100%{transform:rotate(720deg) scale(3.6);opacity:0}}' +
+    '.oz-pick-idle{display:inline-block;animation:ozPickIdle 2.8s ease-in-out infinite;transform-origin:center;}' +
+    '.oz-pick-zoom{display:inline-block;position:relative;z-index:9999;animation:ozPickZoom 0.65s cubic-bezier(.2,.85,.25,1) forwards;transform-origin:center;}';
+  document.head.appendChild(spinStyle);
+
+  var hBtnLayout = document.getElementById('helpBtn');
+  if (hBtnLayout && hBtnLayout.parentNode && hBtnLayout.parentNode.parentNode) {
+    var btnGroup = hBtnLayout.parentNode;
+    var headerRow = btnGroup.parentNode;
+    headerRow.style.flexWrap = 'wrap';
+    headerRow.style.gap = '10px';
+    headerRow.style.paddingTop = '12px';
+    if (headerRow.firstElementChild) {
+      headerRow.firstElementChild.style.width = '100%';
+      headerRow.firstElementChild.style.maxWidth = '100%';
+      headerRow.firstElementChild.style.flex = '1 1 100%';
+      headerRow.firstElementChild.style.display = 'flex';
+      headerRow.firstElementChild.style.justifyContent = 'space-between';
+      headerRow.firstElementChild.style.alignItems = 'center';
+
+      var rndBtn = document.createElement('button');
+      rndBtn.type = 'button';
+      rndBtn.style.cssText = 'background:transparent;border:none;padding:0;cursor:pointer;display:flex;flex-direction:column;align-items:center;flex-shrink:0;overflow:visible;';
+      rndBtn.innerHTML = '<span class="oz-pick-idle" style="width:62px;height:62px;border-radius:50%;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.65);background:#0A192F;">' +
+        '<img src="1795393224196.jpg" alt="Pick a Song" style="width:100%;height:100%;object-fit:cover;object-position:center 38%;transform:scale(1.12);display:block;" /></span>' +
+        '<span style="margin-top:-6px;position:relative;z-index:2;background:#0A192F;color:#E2C07D;border:1.5px solid #C99E48;border-radius:999px;padding:2px 9px;font-size:9.5px;font-weight:800;letter-spacing:0.4px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.6);">PICK A SONG</span>';
+
+      rndBtn.onclick = function() {
+        var icon = rndBtn.querySelector('span');
+        icon.className = 'oz-pick-zoom';
+        setTimeout(function() {
+          icon.className = 'oz-pick-idle';
+          var pool = Array.isArray(window.VERIFIED_SONGS) ? window.VERIFIED_SONGS : [];
+          if (typeof activeLang !== 'undefined' && (activeLang === 'English' || activeLang === 'Spanish')) {
+            var filtered = pool.filter(function(s) { return s.lang === activeLang; });
+            if (filtered.length) pool = filtered;
+          }
+          if (pool.length) {
+            var pick = pool[Math.floor(Math.random() * pool.length)];
+            launchSong(pick);
+          }
+        }, 620);
+      };
+      headerRow.firstElementChild.appendChild(rndBtn);
+    }
+
+    btnGroup.style.width = '100%';
+    btnGroup.style.justifyContent = 'flex-start';
+    btnGroup.style.flexWrap = 'wrap';
+    btnGroup.style.gap = '10px';
+    btnGroup.querySelectorAll('button').forEach(function(b) {
+      if (b.textContent && b.textContent.indexOf('Smart') !== -1) {
+        b.style.display = 'none';
+      } else {
+        b.style.padding = '8px 12px';
+      }
+    });
+
+    var prevHelpHandler = hBtnLayout.onclick;
+    hBtnLayout.onclick = function(e) {
+      if (prevHelpHandler) prevHelpHandler.call(this, e);
+      setTimeout(function() {
+        var divs = document.querySelectorAll('div');
+        for (var i = divs.length - 1; i >= 0; i--) {
+          var el = divs[i];
+          if (el.textContent && el.textContent.indexOf('How to Use') !== -1 && el.style && el.style.position === 'fixed') {
+            var cardBox = el.firstElementChild || el;
+            if (!cardBox.querySelector('.oz-guide-extra')) {
+              var extra = document.createElement('div');
+              extra.className = 'oz-guide-extra';
+              extra.style.cssText = 'margin-top:10px;padding-top:10px;border-top:1px solid #334155;font-size:12px;color:#CBD5E1;text-align:left;line-height:1.5;';
+              extra.innerHTML = '<div>• <strong>Pick a Song:</strong> Tap the spinning gold medallion at the top to launch a random song (matches your selected All / English / Spanish filter).</div>' +
+                '<div style="margin-top:4px;">• <strong>Tip Jar:</strong> Enjoying the free app? Tap <strong>Tip Jar</strong> to buy Ozzie a coffee or strings on Cash App ($ozzgm).</div>';
+              var tipCard = cardBox.querySelector('.ozzie-tip-card');
+              if (tipCard) { cardBox.insertBefore(extra, tipCard); } else { cardBox.appendChild(extra); }
+            }
+            break;
+          }
+        }
+      }, 45);
+    };
+  }
+
+  var origRenderList = renderList;
+  renderList = function() {
+    origRenderList();
+    var listBox = document.getElementById('songList');
+    if (!listBox) return;
+    listBox.querySelectorAll('span, div').forEach(function(el) {
+      if (el.children.length === 0) {
+        var txt = (el.textContent || '').trim();
+        if (txt === 'EN') el.textContent = '🇺🇸 EN';
+        if (txt === 'ES') el.textContent = '🇲🇽 ES';
+      }
+    });
+  };
 
  renderList(); requestAnimationFrame(tick);
 })();
