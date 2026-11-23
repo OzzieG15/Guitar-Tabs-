@@ -1000,11 +1000,12 @@
       history.pushState({ view: 'modal' }, '', '#modal');
     }
   };
-
+  var ignoreNextPop = false;
   var origCloseChord = closeChordModal;
   closeChordModal = function() {
     origCloseChord();
     if (location.hash === '#modal') {
+      ignoreNextPop = true;
       history.back();
     }
   };
@@ -1015,12 +1016,17 @@
     backBtnEl.onclick = function(e) {
       if (origBackClick) origBackClick.call(this, e);
       if (location.hash === '#player' || location.hash === '#modal') {
+        ignoreNextPop = true;
         history.back();
       }
     };
   }
 
   window.addEventListener('popstate', function() {
+    if (ignoreNextPop) {
+      ignoreNextPop = false;
+      return;
+    }
     if (!chordModal.classList.contains('hidden')) {
       origCloseChord();
       return;
