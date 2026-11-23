@@ -1318,23 +1318,53 @@
   }, 150);
 
 
-  var cleanHelpBtn = document.getElementById('helpBtn');
-  var cleanHelpModal = document.getElementById('helpModal');
-  if (cleanHelpBtn && cleanHelpModal) {
-    cleanHelpBtn.addEventListener('click', function() {
-      var card = cleanHelpModal.firstElementChild || cleanHelpModal;
-      var gotItBtn = card.querySelector('button');
-      if (!card.querySelector('.oz-clean-guide-notes')) {
-        var notes = document.createElement('div');
-        notes.className = 'oz-clean-guide-notes';
-        notes.style.cssText = 'margin:10px 0 12px;padding-top:10px;border-top:1px solid #334155;font-size:13px;color:#E2E8F0;text-align:left;line-height:1.5;';
-        notes.innerHTML = '<div style="margin-bottom:7px;">• <strong>Guitar / Ukulele:</strong> Choose your instrument on the home screen (or toggle inside any chord diagram popup).</div>' +
-          '<div style="margin-bottom:7px;">• <strong>Pick a Song:</strong> Tap the spinning gold medallion in the top-right corner to launch a random song matching your active <strong>All / English / Spanish</strong> filter.</div>' +
-          '<div>• <strong>Tip Jar:</strong> Enjoying the free app? Tap <strong>Tip Jar</strong> to buy Ozzie a coffee or guitar strings on Cash App (<strong>$ozzgm</strong>).</div>';
-        if (gotItBtn) { card.insertBefore(notes, gotItBtn); } else { card.appendChild(notes); }
+    var origLaunchSong = launchSong;
+  launchSong = function(song) {
+    origLaunchSong(song);
+    if (typeof isPlaying !== 'undefined' && isPlaying) {
+      var pBtn = document.getElementById('playPauseBtn');
+      if (pBtn) {
+        pBtn.click();
+      } else {
+        isPlaying = false;
       }
+    }
+  };
+
+  var cleanHelpBtn = document.getElementById('helpBtn');
+  if (cleanHelpBtn) {
+    cleanHelpBtn.addEventListener('click', function() {
+      setTimeout(function() {
+        document.querySelectorAll('h2, h3, div').forEach(function(el) {
+          if (el.children.length === 0 && (el.textContent || '').trim() === "How to Use Ozzie's Play App") {
+            var card = el.parentNode;
+            var gotItBtn = card.querySelector('button');
+            if (!card.querySelector('.oz-clean-guide-notes')) {
+              card.querySelectorAll('div, p, li').forEach(function(oldRow) {
+                if (oldRow !== el && oldRow.children.length === 0 && (oldRow.textContent || '').trim().indexOf('•') === 0) {
+                  oldRow.style.display = 'none';
+                }
+              });
+              var notes = document.createElement('div');
+              notes.className = 'oz-clean-guide-notes';
+              notes.style.cssText = 'margin:10px 0 14px;font-size:13px;color:#E2E8F0;text-align:left;line-height:1.45;';
+              notes.innerHTML = '<div style="margin-bottom:7px;">• <strong>Start Playing:</strong> Songs open paused—tap <strong>Play</strong> when ready to scroll.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Chords:</strong> Tap any blue chord to pause and view finger diagrams.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Instrument:</strong> Pick <strong>Guitar</strong> or <strong>Ukulele</strong> on the home screen first.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Change Keys:</strong> Tap the yellow <strong>Key</strong> button inside a song to switch keys.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Speed &amp; Sections:</strong> Use the bottom bar to adjust speed or jump sections.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Pick a Song:</strong> Tap the spinning gold medallion for a random song.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Search &amp; Filter:</strong> Filter by <strong>All / English / Spanish / Artist</strong> or search.</div>' +
+                '<div style="margin-bottom:7px;">• <strong>Request Song:</strong> Tap <strong>+ Request Song</strong> to send requests to Ozzie.</div>' +
+                '<div>• <strong>Tip Jar:</strong> Buy Ozzie a coffee or strings on Cash App (<strong>$ozzgm</strong>).</div>';
+              if (gotItBtn) { card.insertBefore(notes, gotItBtn); } else { card.appendChild(notes); }
+            }
+          }
+        });
+      }, 30);
     });
   }
+
 
   var origRenderList = renderList;
   renderList = function() {
