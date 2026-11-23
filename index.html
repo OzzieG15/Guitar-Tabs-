@@ -1309,12 +1309,14 @@
       }
     });
   }
+  setTimeout(function() {
+    var reqRestoreBtn = document.getElementById('openImportBtn');
+    if (reqRestoreBtn && (typeof isOwner === 'undefined' || !isOwner)) {
+      reqRestoreBtn.style.setProperty('display', 'inline-block', 'important');
+      reqRestoreBtn.textContent = '+ Request Song';
+    }
+  }, 150);
 
-  var reqRestoreBtn = document.getElementById('openImportBtn');
-  if (reqRestoreBtn && typeof isOwner !== 'undefined' && !isOwner) {
-    reqRestoreBtn.style.display = 'inline-block';
-    reqRestoreBtn.textContent = '+ Request Song';
-  }
 
   var cleanHelpBtn = document.getElementById('helpBtn');
   var cleanHelpModal = document.getElementById('helpModal');
