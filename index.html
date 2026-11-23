@@ -1259,9 +1259,14 @@
     var instBar = document.createElement('div');
     instBar.id = 'ozInstBar';
     instBar.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px;';
-    instBar.innerHTML = '<span style="font-size:11px;font-weight:700;color:#94A3B8;margin-right:2px;">Instrument:</span>' +
-      '<button id="ozPickGtr" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #3B82F6;background:#1D4ED8;color:#FFF;">🎸 Guitar</button>' +
-      '<button id="ozPickUke" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #334155;background:#0F172A;color:#CBD5E1;">🇺🇦 Ukulele</button>';
+        instBar.innerHTML = '<span style="font-size:11px;font-weight:700;color:#94A3B8;margin-right:4px;">Instrument:</span>' +
+      '<button id="ozPickGtr" type="button" style="padding:5px 13px 5px 7px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #3B82F6;background:#1D4ED8;color:#FFF;display:inline-flex;align-items:center;gap:7px;">' +
+      '<span style="width:24px;height:24px;border-radius:50%;border:1px solid #D4AF37;background:#0A192F url(\'1795397663407.jpg\') 18% 48% / 220% auto no-repeat;flex-shrink:0;"></span>' +
+      '<span>Guitar</span></button>' +
+      '<button id="ozPickUke" type="button" style="padding:5px 13px 5px 7px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #334155;background:#0F172A;color:#CBD5E1;display:inline-flex;align-items:center;gap:7px;">' +
+      '<span style="width:24px;height:24px;border-radius:50%;border:1px solid #D4AF37;background:#0A192F url(\'1795397663407.jpg\') 82% 48% / 220% auto no-repeat;flex-shrink:0;"></span>' +
+      '<span>Ukulele</span></button>';
+
     searchEl.parentNode.insertBefore(instBar, searchEl.nextSibling);
 
 
