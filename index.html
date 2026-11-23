@@ -1252,6 +1252,80 @@
       }, 45);
     };
   }
+  var ozInstChoice = localStorage.getItem('oz_inst_choice') || 'guitar';
+  var filterScroll = document.getElementById('langAllBtn') && document.getElementById('langAllBtn').parentNode;
+  if (filterScroll && !document.getElementById('ozInstBar')) {
+    var instBar = document.createElement('div');
+    instBar.id = 'ozInstBar';
+    instBar.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px;';
+    instBar.innerHTML = '<span style="font-size:11px;font-weight:700;color:#94A3B8;margin-right:2px;">Instrument:</span>' +
+      '<button id="ozPickGtr" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #3B82F6;background:#1D4ED8;color:#FFF;">🎸 Guitar</button>' +
+      '<button id="ozPickUke" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #334155;background:#0F172A;color:#CBD5E1;">🇺🇦 Ukulele</button>';
+    filterScroll.parentNode.insertBefore(instBar, filterScroll.nextSibling);
+
+    function paintInstBtns() {
+      var gBtn = document.getElementById('ozPickGtr');
+      var uBtn = document.getElementById('ozPickUke');
+      if (!gBtn || !uBtn) return;
+      if (ozInstChoice === 'ukulele') {
+        uBtn.style.background = '#1D4ED8'; uBtn.style.borderColor = '#3B82F6'; uBtn.style.color = '#FFF';
+        gBtn.style.background = '#0F172A'; gBtn.style.borderColor = '#334155'; gBtn.style.color = '#CBD5E1';
+      } else {
+        gBtn.style.background = '#1D4ED8'; gBtn.style.borderColor = '#3B82F6'; gBtn.style.color = '#FFF';
+        uBtn.style.background = '#0F172A'; uBtn.style.borderColor = '#334155'; uBtn.style.color = '#CBD5E1';
+      }
+    }
+    paintInstBtns();
+
+    document.getElementById('ozPickGtr').onclick = function() {
+      ozInstChoice = 'guitar';
+      localStorage.setItem('oz_inst_choice', 'guitar');
+      paintInstBtns();
+    };
+    document.getElementById('ozPickUke').onclick = function() {
+      ozInstChoice = 'ukulele';
+      localStorage.setItem('oz_inst_choice', 'ukulele');
+      paintInstBtns();
+    };
+
+    document.addEventListener('click', function(ev) {
+      if (ev.target && ev.target.classList && ev.target.classList.contains('chord-btn')) {
+        setTimeout(function() {
+          var modal = document.getElementById('chordModal');
+          if (!modal) return;
+          modal.querySelectorAll('button').forEach(function(b) {
+            var t = (b.textContent || '').trim().toLowerCase();
+            if (ozInstChoice === 'ukulele' && t.indexOf('ukulele') !== -1) b.click();
+            if (ozInstChoice === 'guitar' && t.indexOf('guitar') !== -1) b.click();
+          });
+        }, 25);
+      }
+    });
+  }
+
+  var reqRestoreBtn = document.getElementById('openImportBtn');
+  if (reqRestoreBtn && typeof isOwner !== 'undefined' && !isOwner) {
+    reqRestoreBtn.style.display = 'inline-block';
+    reqRestoreBtn.textContent = '+ Request Song';
+  }
+
+  var cleanHelpBtn = document.getElementById('helpBtn');
+  var cleanHelpModal = document.getElementById('helpModal');
+  if (cleanHelpBtn && cleanHelpModal) {
+    cleanHelpBtn.addEventListener('click', function() {
+      var card = cleanHelpModal.firstElementChild || cleanHelpModal;
+      var gotItBtn = card.querySelector('button');
+      if (!card.querySelector('.oz-clean-guide-notes')) {
+        var notes = document.createElement('div');
+        notes.className = 'oz-clean-guide-notes';
+        notes.style.cssText = 'margin:10px 0 12px;padding-top:10px;border-top:1px solid #334155;font-size:13px;color:#E2E8F0;text-align:left;line-height:1.5;';
+        notes.innerHTML = '<div style="margin-bottom:7px;">• <strong>Guitar / Ukulele:</strong> Choose your instrument on the home screen (or toggle inside any chord diagram popup).</div>' +
+          '<div style="margin-bottom:7px;">• <strong>Pick a Song:</strong> Tap the spinning gold medallion in the top-right corner to launch a random song matching your active <strong>All / English / Spanish</strong> filter.</div>' +
+          '<div>• <strong>Tip Jar:</strong> Enjoying the free app? Tap <strong>Tip Jar</strong> to buy Ozzie a coffee or guitar strings on Cash App (<strong>$ozzgm</strong>).</div>';
+        if (gotItBtn) { card.insertBefore(notes, gotItBtn); } else { card.appendChild(notes); }
+      }
+    });
+  }
 
   var origRenderList = renderList;
   renderList = function() {
@@ -1266,6 +1340,7 @@
       }
     });
   };
+
 
  renderList(); requestAnimationFrame(tick);
 })();
