@@ -862,7 +862,7 @@
     titleTaps++;
     clearTimeout(tapTimer);
     tapTimer = setTimeout(function() { titleTaps = 0; }, 1500);
-    if (titleTaps >= 5) {
+    if (titleTaps >= 8) {
       titleTaps = 0;
       if (isOwner) {
         if (confirm('Lock Smart Builder back to public Request Song mode?')) {
@@ -870,7 +870,7 @@
         }
       } else {
         var pin = prompt('Enter Owner PIN:');
-        if (pin === '1515') {
+        if (pin === '8215') {
           isOwner = true; localStorage.setItem('ozzie_owner_unlocked', '1'); syncOwnerUI();
           alert('Owner mode unlocked! + Smart Builder is active.');
         } else if (pin !== null) {
