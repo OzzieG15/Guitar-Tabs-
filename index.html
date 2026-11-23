@@ -1253,15 +1253,17 @@
     };
   }
   var ozInstChoice = localStorage.getItem('oz_inst_choice') || 'guitar';
-  var filterScroll = document.getElementById('langAllBtn') && document.getElementById('langAllBtn').parentNode;
-  if (filterScroll && !document.getElementById('ozInstBar')) {
+  
+    var searchEl = document.querySelector('input[placeholder*="Search"]');
+  if (searchEl && searchEl.parentNode && !document.getElementById('ozInstBar')) {
     var instBar = document.createElement('div');
     instBar.id = 'ozInstBar';
     instBar.style.cssText = 'display:flex;align-items:center;gap:6px;margin:8px 0 4px;';
     instBar.innerHTML = '<span style="font-size:11px;font-weight:700;color:#94A3B8;margin-right:2px;">Instrument:</span>' +
       '<button id="ozPickGtr" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #3B82F6;background:#1D4ED8;color:#FFF;">🎸 Guitar</button>' +
       '<button id="ozPickUke" type="button" style="padding:5px 11px;border-radius:999px;font-size:12px;font-weight:800;cursor:pointer;border:1px solid #334155;background:#0F172A;color:#CBD5E1;">🇺🇦 Ukulele</button>';
-    filterScroll.parentNode.insertBefore(instBar, filterScroll.nextSibling);
+    searchEl.parentNode.insertBefore(instBar, searchEl.nextSibling);
+
 
     function paintInstBtns() {
       var gBtn = document.getElementById('ozPickGtr');
