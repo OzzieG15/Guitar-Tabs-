@@ -1317,20 +1317,6 @@
     }
   }, 150);
 
-
-    var origLaunchSong = launchSong;
-  launchSong = function(song) {
-    origLaunchSong(song);
-    if (typeof isPlaying !== 'undefined' && isPlaying) {
-      var pBtn = document.getElementById('playPauseBtn');
-      if (pBtn) {
-        pBtn.click();
-      } else {
-        isPlaying = false;
-      }
-    }
-  };
-
   var cleanHelpBtn = document.getElementById('helpBtn');
   if (cleanHelpBtn) {
     cleanHelpBtn.addEventListener('click', function() {
