@@ -433,12 +433,12 @@
     var content = document.createElement('div'); content.className = 'row-content';
         var rawLine = r.raw || r.text || '';
     if (rawLine.indexOf('(') !== -1 && !r.isInstrumental) {
-      var lyricWrap = document.createElement('div');
-      lyricWrap.style.cssText = 'display:flex;flex-wrap:wrap;align-items:flex-end;gap:4px 7px;line-height:1.25;';
+            var lyricWrap = document.createElement('div');
+      lyricWrap.style.cssText = 'display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px 8px;padding-top:28px;line-height:1.25;';
       var wordTokens = rawLine.trim().split(/\s+/);
       wordTokens.forEach(function(token) {
         var wordBox = document.createElement('span');
-        wordBox.style.cssText = 'display:inline-flex;align-items:flex-end;';
+        wordBox.style.cssText = 'display:inline-flex;align-items:baseline;position:relative;';
         var pieces = token.split(/(\([A-G][#b]?[^)]*\))/g);
         var pending = null;
         pieces.forEach(function(piece) {
@@ -447,13 +447,13 @@
             pending = piece.slice(1, -1);
           } else {
             var seg = document.createElement('span');
-            seg.style.cssText = 'display:inline-flex;flex-direction:column;align-items:flex-start;';
+            seg.style.cssText = 'position:relative;display:inline-block;';
             if (pending) {
               var cLabel = transposeChord(pending, transposeSteps);
               var p = document.createElement('button');
               p.type = 'button';
               p.className = 'chord-pill';
-              p.style.cssText = 'cursor:pointer;margin-bottom:3px;align-self:flex-start;';
+              p.style.cssText = 'cursor:pointer;position:absolute;bottom:100%;left:0;margin-bottom:4px;z-index:2;';
               p.textContent = cLabel;
               (function(lbl) {
                 p.onclick = function(ev) {
@@ -463,10 +463,6 @@
               })(cLabel);
               seg.appendChild(p);
               pending = null;
-            } else {
-              var sp = document.createElement('span');
-              sp.style.cssText = 'height:23px;margin-bottom:3px;display:inline-block;';
-              seg.appendChild(sp);
             }
             var wSpan = document.createElement('span');
             wSpan.className = 'lyric-text';
@@ -480,7 +476,7 @@
           var ep = document.createElement('button');
           ep.type = 'button';
           ep.className = 'chord-pill';
-          ep.style.cssText = 'cursor:pointer;margin-bottom:3px;align-self:flex-start;';
+          ep.style.cssText = 'cursor:pointer;position:absolute;bottom:100%;left:100%;margin-left:4px;margin-bottom:4px;z-index:2;';
           ep.textContent = endLabel;
           (function(lbl) {
             ep.onclick = function(ev) {
@@ -493,6 +489,7 @@
         lyricWrap.appendChild(wordBox);
       });
       content.appendChild(lyricWrap);
+
 
     } else {
       if (r.chords && r.chords.length > 0) {
