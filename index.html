@@ -573,10 +573,12 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
             var startY = (firstVocalRow && elapsed < firstVocalRow.time) ? 0 : Math.max(0, curEl.offsetTop - 95);
       var endY = (firstVocalRow && elapsed < firstVocalRow.time) ? 0 : (nextEl ? Math.max(0, nextEl.offsetTop - 95) : startY);
       var targetY = startY + (endY - startY) * frac;
-      if (forceJump) {
+            if (forceJump || typeof vp._sy !== 'number') {
+        vp._sy = targetY;
         vp.scrollTop = targetY;
       } else {
-        vp.scrollTop += (targetY - vp.scrollTop) * 0.06;
+        vp._sy += (targetY - vp._sy) * 0.08;
+        vp.scrollTop = Math.round(vp._sy);
       }
     }
     document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
