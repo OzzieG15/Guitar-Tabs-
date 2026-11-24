@@ -804,11 +804,6 @@ function showChordDiagram(name) {
     chordModal.classList.remove('hidden');
   }
 
-  document.getElementById('viewport').addEventListener('click', function(e) {
-    if (e.target && e.target.classList.contains('chord-pill')) {
-      showChordDiagram(e.target.textContent.trim());
-    }
-  });
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(function() {});
   }
@@ -1089,6 +1084,12 @@ function showChordDiagram(name) {
       origCloseChord();
       return;
     }
+       var rm = document.getElementById('reqModal');
+    if (rm && !rm.classList.contains('hidden')) {
+      rm.classList.add('hidden');
+      return;
+    }
+
        if (location.hash === '#player') return;
 
     if (!playerScreen.classList.contains('hidden')) {
