@@ -565,21 +565,20 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       }
     });
         var curEl = rowEls[activeIdx];
-    if (curEl) {
-      var nextEl = rowEls[activeIdx + 1];
-      var t0 = parsedRows[activeIdx].time;
-      var t1 = (activeIdx + 1 < parsedRows.length) ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
-            var frac = (!activeRow.isInst && t1 > t0) ? Math.min(1, Math.max(0, (elapsed - t0) / (t1 - t0))) : 0;
-            var startY = (firstVocalRow && elapsed < firstVocalRow.time) ? 0 : Math.max(0, curEl.offsetTop - 95);
-      var endY = (firstVocalRow && elapsed < firstVocalRow.time) ? 0 : (nextEl ? Math.max(0, nextEl.offsetTop - 95) : startY);
-      var targetY = startY + (endY - startY) * frac;
-            if (forceJump || typeof vp._sy !== 'number') {
-        vp._sy = targetY;
-        vp.scrollTop = targetY;
-      } else {
-        vp._sy += (targetY - vp._sy) * 0.08;
-        vp.scrollTop = Math.round(vp._sy);
-      }
+    if (    var lastRowEl = rowEls[rowEls.length - 1];
+    var vStart = firstVocalRow ? firstVocalRow.time : 0;
+    var maxScroll = lastRowEl ? Math.max(0, lastRowEl.offsetTop - 95) : 0;
+    var targetY = 0;
+    if (elapsed > vStart && currentSong.totalSec > vStart) {
+      var prog = Math.min(1, Math.max(0, (elapsed - vStart) / (currentSong.totalSec - vStart)));
+      targetY = prog * maxScroll;
+    }
+    if (forceJump || typeof vp._sy !== 'number') {
+      vp._sy = targetY;
+      vp.scrollTop = targetY;
+    } else {
+      vp._sy += (targetY - vp._sy) * 0.08;
+      vp.scrollTop = Math.round(vp._sy);
     }
     document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
     var jumper = document.getElementById('secJumper'); jumper.innerHTML = '';
