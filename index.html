@@ -435,7 +435,8 @@
     if (rawLine.indexOf('(') !== -1 && !r.isInstrumental) {
                   var lyricWrap = document.createElement('div');
       lyricWrap.style.cssText = 'display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 8px;line-height:1.25;';
-      var wordTokens = rawLine.trim().split(/\s+/);
+var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split(/\s+/);
+
       wordTokens.forEach(function(token) {
         var wordBox = document.createElement('span');
         wordBox.style.cssText = 'display:inline-flex;align-items:flex-end;';
