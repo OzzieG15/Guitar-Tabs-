@@ -537,7 +537,8 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
     document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
     var jumper = document.getElementById('secJumper'); jumper.innerHTML = '';
     var activeSecIdx = 0;
-    for (var j = 0; j < sections.length; j++) { if (elapsed >= sections.at(j).start) activeSecIdx = j; }
+        for (var j = 0; j < sections.length; j++) { if (elapsed >= sections[j].start) activeSecIdx = j; }
+
     sections.forEach(function(sec, idx) {
       var btn = document.createElement('button');
       btn.className = 'sec-pill' + (idx === activeSecIdx ? ' active' : '');
@@ -562,7 +563,8 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
   document.getElementById('keyPill').onclick = function() {
     if (!currentSong) return;
     targetIdx = (targetIdx + 1) % TARGET_KEYS.length;
-    transposeSteps = getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
+transposeSteps = getStepsForTarget(currentSong.key, TARGET_KEYS[targetIdx]);
+getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
     updateKeyPill();
     renderPlayer();
   };
