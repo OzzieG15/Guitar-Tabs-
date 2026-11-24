@@ -282,7 +282,8 @@
   }
   function parseDuration(str) {
     var p = (str || '3:00').split(':');
-    return (parseInt(p.at(0), 10) || 0) * 60 + (parseInt(p.at(1), 10) || 0);
+    var z = 0, o = 1;
+    return (parseInt(p[z], 10) || 0) * 60 + (parseInt(p[o], 10) || 0);
   }
   function sortSongs(list) {
     return list.slice().sort(function(a, b) {
