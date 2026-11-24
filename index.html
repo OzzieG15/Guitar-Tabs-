@@ -257,13 +257,13 @@
     return chord.replace(/^([A-G][#b]?)(.*)$/, function(_, root, suffix) {
       var idx = rootToIdx(root);
       if (idx === -1) return chord;
-      return NOTES.at((idx + steps + 120) % 12) + suffix;
+      return NOTES[(idx + steps + 120) % 12] + suffix;
     });
   }
   function getStepsForTarget(origKey, targetKey) {
     if (!targetKey || targetKey === 'Original') return 0;
-    var r1 = (origKey || 'G').split(' ').at(0);
-    var r2 = targetKey.split(' ').at(0);
+    var r1 = (origKey || 'G').split(' ').shift();
+    var r2 = targetKey.split(' ').shift();
     var i1 = rootToIdx(r1), i2 = rootToIdx(r2);
     if (i1 === -1 || i2 === -1) return 0;
     return (i2 - i1 + 12) % 12;
