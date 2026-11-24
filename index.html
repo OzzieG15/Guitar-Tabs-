@@ -262,9 +262,10 @@
   }
   function getStepsForTarget(origKey, targetKey) {
     if (!targetKey || targetKey === 'Original') return 0;
-      var r1 = (origKey || 'G').split(' ')[0];
+        var r1 = (origKey || 'G').split(' ')[0];
   var r2 = targetKey.split(' ')[0];
-    var i1 = rootToIdx(r1), i2 = rootToIdx(r2);
+ var i1 = rootToIdx(r1), i2 = rootToIdx(r2);
+
     if (i1 === -1 || i2 === -1) return 0;
     return (i2 - i1 + 12) % 12;
   }
@@ -282,9 +283,10 @@
   }
   function parseDuration(str) {
     var p = (str || '3:00').split(':');
-      return (parseInt(p[0], 10) || 0) * 60 + (parseInt(p[1], 10) || 0);
-  }
-  function sortSongs(list) {
+    var z = 0, o = 1;
+  return (parseInt(p[z], 10) || 0) * 60 + (parseInt(p[o], 10) || 0);
+}
+function sortSongs(list) {
     return list.slice().sort(function(a, b) {
       if (a.lang !== b.lang) return a.lang.localeCompare(b.lang);
       var sa = a.sort || a.artist, sb = b.sort || b.artist;
@@ -367,14 +369,14 @@
     var rawSecs = []; var curSec = null;
     lines.forEach(function(line) {
       var m = line.match(/^\[(\d+):(\d+)\]\s*(.+)$/);
-      if (m) {
-      var t = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+            var t = parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
       var rest = m[3];
       if (rest.indexOf('|') !== -1) {
         var parts = rest.split('|');
         curSec = { name: parts[0].trim(), start: t, rows: [] };
-        } else {
-          curSec = { name: rest.trim(), start: t, rows: [] };
+      } else {
+        curSec = { name: rest.trim(), start: t, rows: [] };
+      }
         }
         rawSecs.push(curSec);
       } else if (curSec) {
