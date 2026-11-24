@@ -410,28 +410,17 @@
     updateKeyPill();
     document.getElementById('playPauseBtn').textContent = 'Play';
     welcomeScreen.classList.add('hidden'); playerScreen.classList.remove('hidden');
-    renderPlayer();
+        buildRows();
+    renderPlayer(true);
   }
-  function renderPlayer() {
-    if (!currentSong) return;
-    var activeIdx = 0;
-    for (var i = 0; i < parsedRows.length; i++) { if (elapsed >= parsedRows.at(i).time) activeIdx = i; else break; }
-    var activeRow = parsedRows.at(activeIdx) || { section: 'Intro', isInst: false };
-    document.getElementById('secLabel').textContent = activeRow.section;
-    var cdBox = document.getElementById('countdownBox'); cdBox.innerHTML = '';
-    if (activeRow.isInst && activeRow.section.toLowerCase().indexOf('intro') !== -1) {
-      var firstVocal = parsedRows.find(function(r) { return !r.isInst; });
-      var rem = firstVocal ? Math.max(1, Math.ceil(firstVocal.time - elapsed)) : 0;
-      if (rem > 0) {
-        var pill = document.createElement('span'); pill.className = 'countdown-pill';
-        pill.textContent = '• Vocals in ' + rem + 's'; cdBox.appendChild(pill);
-      }
-    }
+  function buildRows() {
     var vp = document.getElementById('viewport'); vp.innerHTML = '';
-  parsedRows.slice(activeIdx, activeIdx + 8).forEach(function(r, idx) {
-    var opCls = idx === 0 ? 'op-0' : (r.section === activeRow.section ? 'op-1' : (idx <= 4 ? 'op-2' : 'op-3'));
-    var rowEl = document.createElement('div'); rowEl.className = 'row ' + opCls;
-      var bar = document.createElement('div'); bar.className = idx === 0 ? 'active-bar' : 'active-bar spacer';
+    parsedRows.forEach(function(r, idx) {
+
+          var rowEl = document.createElement('div'); rowEl.className = 'row op-1';
+      rowEl.setAttribute('data-sec', r.section);
+      var bar = document.createElement('div'); bar.className = 'active-bar spacer';
+
     var content = document.createElement('div'); content.className = 'row-content';
         var rawLine = r.raw || r.text || '';
     if (rawLine.indexOf('(') !== -1 && !r.isInstrumental) {
@@ -531,19 +520,75 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
 
 
       rowEl.appendChild(bar); rowEl.appendChild(content); vp.appendChild(rowEl);
+        });
+    var pad = document.createElement('div');
+    pad.style.cssText = 'height:65vh;flex-shrink:0;';
+    vp.appendChild(pad);
+  }
+  function renderPlayer(forceJump) {
+    if (!currentSong) return;
+    var activeIdx = 0;
+    for (var i = 0; i < parsedRows.length; i++) {
+      if (elapsed >= parsedRows[i].time) activeIdx = i; else break;
+    }
+    var activeRow = parsedRows[activeIdx] || { section: 'Intro', isInst: false };
+    document.getElementById('secLabel').textContent = activeRow.section;
+    var cdBox = document.getElementById('countdownBox'); cdBox.innerHTML = '';
+    if (activeRow.isInst && activeRow.section.toLowerCase().indexOf('intro') !== -1) {
+      var firstVocal = parsedRows.find(function(r) { return !r.isInst; });
+      var rem = firstVocal ? Math.max(1, Math.ceil(firstVocal.time - elapsed)) : 0;
+      if (rem > 0) {
+        var pill = document.createElement('span'); pill.className = 'countdown-pill';
+        pill.textContent = '• Vocals in ' + rem + 's'; cdBox.appendChild(pill);
+      }
+    }
+    var vp = document.getElementById('viewport');
+    var rowEls = vp.querySelectorAll('.row');
+    rowEls.forEach(function(el, idx) {
+      var bar = el.firstElementChild;
+      if (idx === activeIdx) {
+        el.className = 'row op-0';
+        if (bar) bar.className = 'active-bar';
+      } else {
+        if (bar) bar.className = 'active-bar spacer';
+        if (idx < activeIdx) {
+          el.className = 'row op-2';
+        } else if (parsedRows[idx] && parsedRows[idx].section === activeRow.section) {
+          el.className = 'row op-1';
+        } else if (idx - activeIdx <= 4) {
+          el.className = 'row op-2';
+        } else {
+          el.className = 'row op-3';
+        }
+      }
     });
+    var curEl = rowEls[activeIdx];
+    if (curEl) {
+      var nextEl = rowEls[activeIdx + 1];
+      var t0 = parsedRows[activeIdx].time;
+      var t1 = (activeIdx + 1 < parsedRows.length) ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
+      var frac = t1 > t0 ? Math.min(1, Math.max(0, (elapsed - t0) / (t1 - t0))) : 0;
+      var startY = Math.max(0, curEl.offsetTop - 16);
+      var endY = nextEl ? Math.max(0, nextEl.offsetTop - 16) : startY;
+      var targetY = startY + (endY - startY) * frac;
+      if (forceJump) {
+        vp.scrollTop = targetY;
+      } else {
+        vp.scrollTop += (targetY - vp.scrollTop) * 0.18;
+      }
+    }
     document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
     var jumper = document.getElementById('secJumper'); jumper.innerHTML = '';
     var activeSecIdx = 0;
-    for (var j = 0; j < sections.length; j++) { if (elapsed >= sections.at(j).start) activeSecIdx = j; }
+    for (var j = 0; j < sections.length; j++) { if (elapsed >= sections[j].start) activeSecIdx = j; }
     sections.forEach(function(sec, idx) {
       var btn = document.createElement('button');
       btn.className = 'sec-pill' + (idx === activeSecIdx ? ' active' : '');
       btn.textContent = sec.name;
-      btn.onclick = function() { elapsed = sec.start; lastTick = performance.now(); renderPlayer(); };
+      btn.onclick = function() { elapsed = sec.start; lastTick = performance.now(); renderPlayer(true); };
       jumper.appendChild(btn);
     });
-    var activePill = jumper.children.item(activeSecIdx);
+    var activePill = jumper.children[activeSecIdx];
     if (activePill) activePill.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
   }
   function tick(now) {
@@ -551,7 +596,7 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       if (lastTick !== null) {
         elapsed += ((now - lastTick) / 1000) * speed;
         if (elapsed >= currentSong.totalSec) { elapsed = currentSong.totalSec; isPlaying = false; document.getElementById('playPauseBtn').textContent = 'Play'; }
-        renderPlayer();
+        renderPlayer(false);
       }
       lastTick = now;
     } else { lastTick = now; }
@@ -560,9 +605,10 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
   document.getElementById('keyPill').onclick = function() {
     if (!currentSong) return;
     targetIdx = (targetIdx + 1) % TARGET_KEYS.length;
-    transposeSteps = getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
+    transposeSteps = getStepsForTarget(currentSong.key, TARGET_KEYS[targetIdx]);
     updateKeyPill();
-    renderPlayer();
+    buildRows();
+    renderPlayer(true);
   };
   document.querySelectorAll('.tab').forEach(function(btn) {
     btn.onclick = function() { document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); }); btn.classList.add('active'); activeTab = btn.dataset.tab; expandedArtist = null; renderList(); };
@@ -570,7 +616,8 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
   searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); };
   document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
   document.getElementById('playPauseBtn').onclick = function() { isPlaying = !isPlaying; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play'; };
-  document.getElementById('restartBtn').onclick = function() { elapsed = 0; isPlaying = true; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = 'Pause'; renderPlayer(); };
+    document.getElementById('restartBtn').onclick = function() { elapsed = 0; lastTick = performance.now(); renderPlayer(true); };
+
   document.getElementById('speedSelect').onchange = function(e) { speed = parseFloat(e.target.value) || 1; };
 
   var modal = document.getElementById('importModal');
