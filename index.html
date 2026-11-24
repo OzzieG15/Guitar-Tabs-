@@ -369,11 +369,12 @@
     lines.forEach(function(line) {
       var m = line.match(/^\[(\d+):(\d+)\]\s*(.+)$/);
       if (m) {
-        var t = parseInt(m.at(1), 10) * 60 + parseInt(m.at(2), 10);
-        var rest = m.at(3);
+ var z = 0, o = 1, two = 2, thr = 3;
+        var t = parseInt(m[o], 10) * 60 + parseInt(m[two], 10);
+        var rest = m[thr];
         if (rest.indexOf('|') !== -1) {
           var parts = rest.split('|');
-          curSec = { name: parts.at(0).trim(), start: t, rows: [{ text: '[ Instrumental ]', chords: parts.at(1).trim().split(/\s*-\s*/), isInst: true }] };
+          curSec = { name: parts[z].trim(), start: t, rows: [{ text: '[ Instrumental ]', chords: parts[o].trim().split(/\s*-\s*/), isInst: true }] };
         } else {
           curSec = { name: rest.trim(), start: t, rows: [] };
         }
@@ -381,12 +382,12 @@
       } else if (curSec) {
         var chords = [];
         var cleanText = line.replace(/\(([^)]+)\)/g, function(_, c) { if (chords.indexOf(c) === -1) chords.push(c); return ''; }).replace(/\s+/g, ' ').trim();
-              curSec.rows.push({ text: cleanText, raw: line, chords: chords, isInst: false });
+        curSec.rows.push({ text: cleanText, raw: line, chords: chords, isInst: false });
       }
     });
     var rows = [];
     rawSecs.forEach(function(sec, idx) {
-      var nextStart = idx + 1 < rawSecs.length ? rawSecs.at(idx + 1).start : totalSec;
+      var nextStart = idx + 1 < rawSecs.length ? rawSecs[idx + 1].start : totalSec;
       var span = Math.max(2, nextStart - sec.start);
       var perRow = span / Math.max(1, sec.rows.length);
       sec.rows.forEach(function(r, rIdx) {
