@@ -570,13 +570,13 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       var t0 = parsedRows[activeIdx].time;
       var t1 = (activeIdx + 1 < parsedRows.length) ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
             var frac = (!activeRow.isInst && t1 > t0) ? Math.min(1, Math.max(0, (elapsed - t0) / (t1 - t0))) : 0;
-      var startY = activeIdx === 0 ? 0 : Math.max(0, curEl.offsetTop - 72);
+      var startY = (firstVocalRow && elapsed < firstVocalRow.time) ? 0 : Math.max(0, curEl.offsetTop - 72);
       var endY = nextEl ? Math.max(0, nextEl.offsetTop - 72) : startY;
       var targetY = startY + (endY - startY) * frac;
       if (forceJump) {
         vp.scrollTop = targetY;
       } else {
-        vp.scrollTop += (targetY - vp.scrollTop) * 0.14;
+        vp.scrollTop += (targetY - vp.scrollTop) * 0.08;
       }
     }
     document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
