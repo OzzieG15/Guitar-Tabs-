@@ -80,9 +80,9 @@
   #viewport {
     flex: 1; min-height: 0; background: #000000; overflow-y: auto;
     -webkit-overflow-scrolling: touch; touch-action: pan-y; padding: 14px 14px 10px;
-    display: flex; flex-direction: column; gap: 16px;
+     display: flex; flex-direction: column; gap: 8px;
   }
-  .row { display: flex; align-items: flex-start; gap: 10px; transition: opacity 0.2s ease; }
+  .row { display: flex; align-items: flex-start; gap: 10px; transition: opacity 0.35s ease, color 0.35s ease; }
   .active-bar { width: 4px; min-height: 44px; background: #3B82F6; border-radius: 2px; flex-shrink: 0; margin-top: 2px; }
   .active-bar.spacer { background: transparent; }
   .row-content { flex: 1; min-width: 0; }
@@ -93,9 +93,10 @@
     color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 999px; white-space: nowrap;
   }
   .op-0 { opacity: 1.0; color: #FFFFFF; }
-  .op-1 { opacity: 0.72; color: #CBD5E1; }
-  .op-2 { opacity: 0.48; color: #94A3B8; }
-  .op-3 { opacity: 0.28; color: #64748B; }
+  .op-1 { opacity: 0.92; color: #F1F5F9; }
+  .op-2 { opacity: 0.72; color: #CBD5E1; }
+  .op-3 { opacity: 0.50; color: #94A3B8; }
+
   .p-footer { background: #0F172A; padding: 8px 12px 10px; display: flex; flex-direction: column; gap: 8px; }
   .f-row1 { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
   .btn-play { background: #2563EB; color: #FFFFFF; border: none; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 700; cursor: pointer; }
@@ -427,8 +428,9 @@
       }
     }
     var vp = document.getElementById('viewport'); vp.innerHTML = '';
-    parsedRows.slice(activeIdx, activeIdx + 4).forEach(function(r, idx) {
-      var rowEl = document.createElement('div'); rowEl.className = 'row op-' + idx;
+  parsedRows.slice(activeIdx, activeIdx + 8).forEach(function(r, idx) {
+    var opCls = idx === 0 ? 'op-0' : (r.section === activeRow.section ? 'op-1' : (idx <= 4 ? 'op-2' : 'op-3'));
+    var rowEl = document.createElement('div'); rowEl.className = 'row ' + opCls;
       var bar = document.createElement('div'); bar.className = idx === 0 ? 'active-bar' : 'active-bar spacer';
     var content = document.createElement('div'); content.className = 'row-content';
         var rawLine = r.raw || r.text || '';
