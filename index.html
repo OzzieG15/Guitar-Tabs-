@@ -569,7 +569,7 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       var nextEl = rowEls[activeIdx + 1];
       var t0 = parsedRows[activeIdx].time;
       var t1 = (activeIdx + 1 < parsedRows.length) ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
-      var frac = (t1 > t0) ? Math.min(1, Math.max(0, (elapsed - t0) / (t1 - t0))) : 0;
+            var frac = (!activeRow.isInst && t1 > t0) ? Math.min(1, Math.max(0, (elapsed - t0) / (t1 - t0))) : 0;
       var startY = activeIdx === 0 ? 0 : Math.max(0, curEl.offsetTop - 72);
       var endY = nextEl ? Math.max(0, nextEl.offsetTop - 72) : startY;
       var targetY = startY + (endY - startY) * frac;
