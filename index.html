@@ -543,6 +543,21 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
     if (activePill) activePill.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
   }
   function tick(now) {
+       var rb = document.getElementById('readyBadge');
+    if (isPlaying && currentSong && readyHoldUntil > now) {
+      lastTick = now;
+      if (!rb) {
+        rb = document.createElement('div');
+        rb.id = 'readyBadge';
+        rb.style.cssText = 'position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,0.92);border:1px solid #38BDF8;color:#38BDF8;padding:6px 16px;border-radius:999px;font-size:15px;font-weight:800;z-index:45;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.6);';
+        document.getElementById('viewport').appendChild(rb);
+      }
+      rb.textContent = 'Get Ready... ' + Math.ceil((readyHoldUntil - now) / 850);
+      requestAnimationFrame(tick);
+      return;
+    }
+    if (rb && rb.parentNode) rb.parentNode.removeChild(rb);
+    readyHoldUntil = 0;
     if (isPlaying && currentSong) {
       if (lastTick !== null) {
         elapsed += ((now - lastTick) / 1000) * speed;
@@ -591,12 +606,41 @@ getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
   document.querySelectorAll('.tab').forEach(function(btn) {
     btn.onclick = function() { document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); }); btn.classList.add('active'); activeTab = btn.dataset.tab; expandedArtist = null; renderList(); };
   });
-  searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); };
-  document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
-  document.getElementById('playPauseBtn').onclick = function() { isPlaying = !isPlaying; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play'; };
-  document.getElementById('restartBtn').onclick = function() { elapsed = 0; isPlaying = true; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = 'Pause'; renderPlayer(); };
-  document.getElementById('speedSelect').onchange = function(e) { speed = parseFloat(e.target.value) || 1; };
-
+  searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); };    document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
+  var readyHoldUntil = 0, didManualScroll = false, touchStartY = null; document.getElementById('playPauseBtn').onclick = function() {
+    isPlaying = !isPlaying;
+    lastTick = performance.now();
+    if (isPlaying && didManualScroll && elapsed > 0) {
+      readyHoldUntil = performance.now() + 2500;
+      didManualScroll = false;
+    } else if (!isPlaying) {
+      readyHoldUntil = 0;
+    }  document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play';
+  };
+document.getElementById('restartBtn').onclick = function() {
+    elapsed = 0; isPlaying = true; readyHoldUntil = 0; didManualScroll = false; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = 'Pause'; renderPlayer();
+  };
+document.getElementById('speedSelect').onchange = function(e) { speed = parseFloat(e.target.value) || 1; };
+  var vpTouchEl = document.getElementById('viewport');
+vpTouchEl.addEventListener('touchstart', function(e) {
+    if (!currentSong || !e.touches || !e.touches.length) return;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+vpTouchEl.addEventListener('touchmove', function(e) {
+    if (!currentSong || touchStartY === null || !e.touches || !e.touches.length) return;
+    var dy = touchStartY - e.touches[0].clientY;
+    if (Math.abs(dy) < 6) return;
+    touchStartY = e.touches[0].clientY;
+    if (isPlaying) {
+      isPlaying = false;
+      readyHoldUntil = 0;     document.getElementById('playPauseBtn').textContent = 'Play';
+    }
+    didManualScroll = true;
+    var maxT = Math.max(0, (currentSong.totalSec || 180) - 1);
+    elapsed = Math.min(maxT, Math.max(0, elapsed + dy * 0.14));
+    lastTick = performance.now();
+    renderPlayer();
+  }, { passive: true }); vpTouchEl.addEventListener('touchend', function() { touchStartY = null; }, { passive: true });
   var modal = document.getElementById('importModal');
   var mHead = document.createElement('div'); mHead.className = 'm-head';
   var mTitle = document.createElement('div'); mTitle.className = 'm-title'; mTitle.textContent = 'Smart Builder (Auto-Timestamps)';
