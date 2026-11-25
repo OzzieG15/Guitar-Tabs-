@@ -536,7 +536,7 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       var btn = document.createElement('button');
       btn.className = 'sec-pill' + (idx === activeSecIdx ? ' active' : '');
       btn.textContent = sec.name;
-      btn.onclick = function() { elapsed = sec.start; lastTick = performance.now(); renderPlayer(); };
+      btn.onclick = function() { elapsed = sec.start; if (!isPlaying) didManualScroll = true; else readyHoldUntil = performance.now() + 2500; lastTick = performance.now(); renderPlayer(); };
       jumper.appendChild(btn);
     });
     var activePill = jumper.children.item(activeSecIdx);
@@ -629,18 +629,24 @@ vpTouchEl.addEventListener('touchstart', function(e) {
 vpTouchEl.addEventListener('touchmove', function(e) {
     if (!currentSong || touchStartY === null || !e.touches || !e.touches.length) return;
     var dy = touchStartY - e.touches[0].clientY;
-    if (Math.abs(dy) < 6) return;
+    if (Math.abs(dy) < 1) return;
     touchStartY = e.touches[0].clientY;
     if (isPlaying) {
       isPlaying = false;
-      readyHoldUntil = 0;     document.getElementById('playPauseBtn').textContent = 'Play';
+      readyHoldUntil = 0;
+document.getElementById('playPauseBtn').textContent = 'Play';
     }
     didManualScroll = true;
-    var maxT = Math.max(0, (currentSong.totalSec || 180) - 1);
-    elapsed = Math.min(maxT, Math.max(0, elapsed + dy * 0.14));
+        var vpEl = document.getElementById('viewport');
+    var rowH = (vpEl && vpEl.firstElementChild) ? (vpEl.firstElementChild.offsetHeight + 8) : 64;
+    var avgRowSec = (currentSong.totalSec || 180) / Math.max(8, parsedRows.length);
+    var secPerPx = avgRowSec / rowH;
+    var maxT = Math.max(1, (currentSong.totalSec || 180) - 1);
+    elapsed = Math.min(maxT, Math.max(0, elapsed + dy * secPerPx));
     lastTick = performance.now();
     renderPlayer();
-  }, { passive: true }); vpTouchEl.addEventListener('touchend', function() { touchStartY = null; }, { passive: true });
+  }, { passive: true });
+vpTouchEl.addEventListener('touchend', function() { touchStartY = null; }, { passive: true });
   var modal = document.getElementById('importModal');
   var mHead = document.createElement('div'); mHead.className = 'm-head';
   var mTitle = document.createElement('div'); mTitle.className = 'm-title'; mTitle.textContent = 'Smart Builder (Auto-Timestamps)';
