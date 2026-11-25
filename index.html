@@ -1367,12 +1367,23 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
       rndBtn.innerHTML = '<span class="oz-pick-idle" style="width:62px;height:62px;border-radius:50%;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.65);background:#0A192F;">' +
         '<img src="1795393224196.jpg" alt="Pick a Song" style="width:100%;height:100%;object-fit:cover;object-position:center 38%;transform:scale(1.12);display:block;" /></span>' +
         '<span style="margin-top:-6px;position:relative;z-index:2;background:#0A192F;color:#E2C07D;border:1.5px solid #C99E48;border-radius:999px;padding:2px 9px;font-size:9.5px;font-weight:800;letter-spacing:0.4px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.6);">PICK A SONG</span>';
-
       rndBtn.onclick = function() {
         var icon = rndBtn.querySelector('span');
-        icon.className = 'oz-pick-zoom';
+        var rect = icon.getBoundingClientRect();
+        var flyer = icon.cloneNode(true);
+        flyer.className = '';
+        flyer.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;border-radius:50%;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.85);background:#0A192F;z-index:99999;pointer-events:none;transition:transform 0.82s cubic-bezier(.2,.85,.25,1),opacity 0.82s ease;';
+        document.body.appendChild(flyer);
+        icon.style.visibility = 'hidden';
+        var dx = (window.innerWidth / 2) - (rect.left + rect.width / 2);
+        var dy = (window.innerHeight / 2) - (rect.top + rect.height / 2);
+        requestAnimationFrame(function() {
+          flyer.style.transform = 'translate(' + dx + 'px, ' + dy + 'px) rotate(1080deg) scale(4.6)';
+          flyer.style.opacity = '0';
+        });
         setTimeout(function() {
-          icon.className = 'oz-pick-idle';
+          if (flyer.parentNode) flyer.parentNode.removeChild(flyer);
+          icon.style.visibility = 'visible';
           var pool = Array.isArray(ALL_SONGS) && ALL_SONGS.length ? ALL_SONGS.slice() : (Array.isArray(window.VERIFIED_SONGS) ? window.VERIFIED_SONGS.slice() : []);
           if (typeof activeTab !== 'undefined' && (activeTab === 'English' || activeTab === 'Spanish')) {
             var filtered = pool.filter(function(s) { return s.lang === activeTab; });
@@ -1384,7 +1395,7 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
           }
         }, 820);
       };
- headerRow.firstElementChild.appendChild(rndBtn);
+headerRow.firstElementChild.appendChild(rndBtn);
     }
 
     btnGroup.style.width = '100%';
