@@ -1266,11 +1266,10 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
   }
   var spinStyle = document.createElement('style');
   spinStyle.textContent = '@keyframes ozPickIdle{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(6deg) scale(1.04)}}' +
-    '@keyframes ozPickZoom{0%{transform:rotate(0deg) scale(1);opacity:1}70%{transform:rotate(540deg) scale(2.8);opacity:1}100%{transform:rotate(720deg) scale(3.6);opacity:0}}' +
+  '@keyframes ozPickZoom{0%{transform:rotate(0deg) scale(1);opacity:1}80%{transform:rotate(864deg) scale(3.8);opacity:1}100%{transform:rotate(1080deg) scale(4.6);opacity:0}}' +
     '.oz-pick-idle{display:inline-block;animation:ozPickIdle 2.8s ease-in-out infinite;transform-origin:center;}' +
-    '.oz-pick-zoom{display:inline-block;position:relative;z-index:9999;animation:ozPickZoom 0.65s cubic-bezier(.2,.85,.25,1) forwards;transform-origin:center;}';
-  document.head.appendChild(spinStyle);
-
+    '.oz-pick-zoom{display:inline-block;position:relative;z-index:9999;animation:ozPickZoom 0.85s cubic-bezier(.2,.85,.25,1) forwards;transform-origin:center;}';
+ document.head.appendChild(spinStyle);
   var hBtnLayout = document.getElementById('helpBtn');
   if (hBtnLayout && hBtnLayout.parentNode && hBtnLayout.parentNode.parentNode) {
     var btnGroup = hBtnLayout.parentNode;
@@ -1307,7 +1306,7 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
             var pick = pool[Math.floor(Math.random() * pool.length)];
             launchSong(pick);
           }
-        }, 620);
+        }, 820);
       };
  headerRow.firstElementChild.appendChild(rndBtn);
     }
