@@ -433,7 +433,8 @@
      var curStart = activeRow.time || 0;
   var nextTime = parsedRows[activeIdx + 1] ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
   var progress = Math.min(1, Math.max(0, (elapsed - curStart) / Math.max(0.5, nextTime - curStart)));
-  var slidePct = progress > 0.72 ? (progress - 0.72) / 0.28 : 0;
+  var startAt = activeRow.isInst ? 0.35 : 0.65;
+  var slidePct = progress > startAt ? (progress - startAt) / (1 - startAt) : 0;
   parsedRows.slice(activeIdx, activeIdx + 8).forEach(function(r, idx) {
     var opCls = idx === 0 ? 'op-0' : (r.section === activeRow.section ? 'op-1' : (idx <= 4 ? 'op-2' : 'op-3'));
     var rowEl = document.createElement('div'); rowEl.className = 'row ' + opCls;
@@ -529,13 +530,14 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       var txt = document.createElement('div'); txt.className = 'lyric-text'; txt.textContent = r.text;
       content.appendChild(txt);
     }
-      if (idx === 0 && slidePct > 0) {
-        rowEl.style.transform = 'translateY(-' + (slidePct * 28).toFixed(1) + 'px)';
-        rowEl.style.opacity = (1 - slidePct).toFixed(2);
-      } else if (idx > 0 && slidePct > 0) {
-        rowEl.style.transform = 'translateY(-' + (slidePct * 20).toFixed(1) + 'px)';
-      }
       rowEl.appendChild(content); vp.appendChild(rowEl);
+    if (idx === parsedRows.slice(activeIdx, activeIdx + 8).length - 1 && slidePct > 0 && vp.firstElementChild) {
+      var shiftPx = slidePct * (vp.firstElementChild.offsetHeight + 8);
+      for (var k = 0; k < vp.children.length; k++) {
+        vp.children[k].style.transform = 'translateY(-' + shiftPx.toFixed(1) + 'px)';
+      }
+      vp.firstElementChild.style.opacity = (1 - slidePct).toFixed(2);
+    }
     }); document.getElementById('timerDisplay').textContent = fmtTime(elapsed) + ' / ' + fmtTime(currentSong.totalSec);
     var jumper = document.getElementById('secJumper'); jumper.innerHTML = '';
     var activeSecIdx = 0;
