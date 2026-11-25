@@ -935,8 +935,53 @@ function showChordDiagram(name) {
 
   rCard.appendChild(rHead); rCard.appendChild(rSong); rCard.appendChild(rArtist);
   rCard.appendChild(rNote); rCard.appendChild(rStatus); rCard.appendChild(rSend);
+   var rBugBtn = document.createElement('button'); rBugBtn.type = 'button'; rBugBtn.className = 'm-close'; rBugBtn.style.cssText = 'width:100%;padding:8px;color:#FCA5A5;border:1px solid #7F1D1D;background:#1E293B;margin-top:2px;'; rBugBtn.textContent = '🐞 Report a Bug';
+  rBugBtn.onclick = function() { reqModal.classList.add('hidden'); bugModal.classList.remove('hidden'); };
+  rCard.appendChild(rBugBtn);
+
   reqModal.appendChild(rCard);
   document.getElementById('app').appendChild(reqModal);
+  var bugModal = document.createElement('div');
+  bugModal.id = 'bugModal';
+  bugModal.className = 'hidden';
+  bugModal.style.cssText = 'position:absolute;inset:0;background:rgba(2,6,23,0.97);z-index:65;display:flex;flex-direction:column;justify-content:center;padding:20px;gap:12px;';
+  var bCard = document.createElement('div');
+  bCard.style.cssText = 'background:#0F172A;border:1px solid #334155;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:10px;';
+  var bHead = document.createElement('div'); bHead.className = 'm-head';
+  var bTitle = document.createElement('div'); bTitle.className = 'm-title'; bTitle.textContent = 'Report a Bug';
+  var bClose = document.createElement('button'); bClose.className = 'm-close'; bClose.textContent = '✕';
+  bClose.onclick = function() { bugModal.classList.add('hidden'); };
+  bHead.appendChild(bTitle); bHead.appendChild(bClose);
+  var bDesc = document.createElement('textarea'); bDesc.className = 'm-area'; bDesc.style.minHeight = '90px';
+  bDesc.placeholder = 'Describe what went wrong (e.g., wrong chord, scroll issue, button glitch)...';
+  var bStatus = document.createElement('div'); bStatus.style.cssText = 'font-size:12px;color:#38BDF8;min-height:16px;text-align:center;';
+  var bSend = document.createElement('button'); bSend.className = 'm-save'; bSend.style.background = '#DC2626'; bSend.textContent = 'Send Bug Report';
+  bSend.onclick = function() {
+    var msg = bDesc.value.trim();
+    if (!msg) { bStatus.style.color = '#FCA5A5'; bStatus.textContent = 'Please describe the issue first.'; return; }
+    bSend.disabled = true; bSend.textContent = 'Sending...'; bStatus.textContent = '';
+    var diag = 'Song: ' + (currentSong ? currentSong.title + ' - ' + currentSong.artist : 'Home Screen') +
+      ' | Key: ' + (currentSong ? (targetIdx === 0 ? currentSong.key : TARGET_KEYS[targetIdx]) : 'N/A') +
+      ' | Inst: ' + (localStorage.getItem('oz_inst_choice') || 'guitar') +
+      ' | Device: ' + navigator.userAgent;
+    var ep = ['https:/', 'formspree.io', 'f', 'mzerjzvl'].join('/');
+    fetch(ep, {
+      method: 'POST',
+      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'BUG REPORT', issue: msg, diagnostics: diag })
+    }).then(function(res) {
+      if (res.ok) {
+        bStatus.style.color = '#4ADE80'; bStatus.textContent = 'Bug report sent! Thanks for helping improve the app.';
+        bDesc.value = '';
+        setTimeout(function() { bugModal.classList.add('hidden'); bStatus.textContent = ''; }, 1600);
+      } else { throw new Error('err'); }
+    }).catch(function() {
+      bStatus.style.color = '#FCA5A5'; bStatus.textContent = 'Could not send right now. Please try again.';
+    }).finally(function() { bSend.disabled = false; bSend.textContent = 'Send Bug Report'; });
+  };
+  bCard.appendChild(bHead); bCard.appendChild(bDesc); bCard.appendChild(bStatus); bCard.appendChild(bSend);
+  bugModal.appendChild(bCard);
+  document.getElementById('app').appendChild(bugModal);
 
   function syncOwnerUI() {
     openImportBtn.textContent = isOwner ? '+ Smart Builder' : '+ Request Song';
@@ -1008,6 +1053,9 @@ function showChordDiagram(name) {
 
     card.appendChild(t);
     card.appendChild(list);
+       var hBugBtn = document.createElement('button'); hBugBtn.type = 'button'; hBugBtn.className = 'c-close'; hBugBtn.style.cssText = 'margin-top:10px;width:100%;background:#7F1D1D;color:#FECACA;border:1px solid #DC2626;padding:9px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;'; hBugBtn.textContent = '🐞 Report a Bug';
+    hBugBtn.onclick = function() { chordModal.classList.add('hidden'); bugModal.classList.remove('hidden'); };
+    card.appendChild(hBugBtn);
     card.appendChild(close);
     chordModal.appendChild(card);
     chordModal.classList.remove('hidden');
