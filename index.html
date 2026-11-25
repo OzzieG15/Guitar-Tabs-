@@ -999,7 +999,7 @@ function showChordDiagram(name) {
 
   document.getElementById('helpBtn').onclick = showHelpGuide;
   if (!localStorage.getItem('ozzie_seen_help')) {
-    setTimeout(showHelpGuide, 700);
+setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
   }
   var recentBar = document.createElement('div');
   recentBar.style.cssText = 'display:flex;align-items:center;gap:6px;overflow-x:auto;padding:8px 14px;background:#0F172A;border-bottom:1px solid #1E293B;scrollbar-width:none;';
