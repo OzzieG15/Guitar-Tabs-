@@ -1155,7 +1155,7 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
         var openModals = document.querySelectorAll('div');
         for (var i = openModals.length - 1; i >= 0; i--) {
           var el = openModals[i];
-          if (el.textContent && el.textContent.indexOf('How to Use') !== -1 && el.style && el.style.position === 'fixed') {
+          if (el.id === 'chordModal' && !el.classList.contains('hidden')) {
             var cardBox = el.firstElementChild || el;
             if (!cardBox.querySelector('.ozzie-tip-card')) {
               var tc = makeTipCard('Enjoying the free app? Buy Ozzie a coffee or strings!');
