@@ -1372,7 +1372,7 @@ setTimeout(function() { document.getElementById('helpBtn').click(); }, 700);
         var rect = icon.getBoundingClientRect();
         var flyer = icon.cloneNode(true);
         flyer.className = '';
-        flyer.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;border-radius:50%;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.85);background:#0A192F;z-index:99999;pointer-events:none;transition:transform 0.82s cubic-bezier(.2,.85,.25,1),opacity 1.35s ease;';
+        flyer.style.cssText = 'position:fixed;left:' + rect.left + 'px;top:' + rect.top + 'px;width:' + rect.width + 'px;height:' + rect.height + 'px;border-radius:50%;overflow:hidden;box-shadow:0 8px 28px rgba(0,0,0,0.85);background:#0A192F;z-index:99999;pointer-events:none;transition:transform 0.82s cubic-bezier(.2,.85,.25,1),opacity .26s ease 1.07;';
         document.body.appendChild(flyer);
         icon.style.visibility = 'hidden';
         var dx = (window.innerWidth / 2) - (rect.left + rect.width / 2);
