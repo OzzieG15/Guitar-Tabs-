@@ -594,8 +594,8 @@ getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
   document.querySelectorAll('.tab').forEach(function(btn) {
     btn.onclick = function() { document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); }); btn.classList.add('active'); activeTab = btn.dataset.tab; expandedArtist = null; renderList(); };
   });
-  searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); };    document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
-  document.getElementById('playPauseBtn').onclick = function() { isPlaying = !isPlaying; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play'; };
+    searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); }; document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; if (pendingUpdate) { window.location.reload(); return; } playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
+document.getElementById('playPauseBtn').onclick = function() { isPlaying = !isPlaying; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play'; };
   document.getElementById('restartBtn').onclick = function() { elapsed = 0; isPlaying = true; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = 'Pause'; renderPlayer(); }; document.getElementById('speedSelect').onchange = function(e) { speed = parseFloat(e.target.value) || 1; };
   var modal = document.getElementById('importModal');
   var mHead = document.createElement('div'); mHead.className = 'm-head';
@@ -842,10 +842,17 @@ function showChordDiagram(name) {
     chordModal.appendChild(card);
     chordModal.classList.remove('hidden');
   }
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').catch(function() {});
-  }
+      var pendingUpdate = false;
+    if ('serviceWorker' in navigator) {      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(function(reg) {
+        reg.update();
+      }).catch(function() {});
+      var refreshing = false;   navigator.serviceWorker.addEventListener('controllerchange', function() {
+        if (refreshing) return;
+        if (currentSong) { pendingUpdate = true; return; }
+        refreshing = true;
+        window.location.reload();
+      });
+    }
   var deferredPrompt = null;
   var installBanner = document.getElementById('installBanner');
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
