@@ -409,20 +409,22 @@
     var activeRow = parsedRows.at(activeIdx) || { section: 'Intro', isInst: false };
     document.getElementById('secLabel').textContent = activeRow.section;
     var cdBox = document.getElementById('countdownBox'); cdBox.innerHTML = '';
-    if (activeRow.isInst && activeRow.section.toLowerCase().indexOf('intro') !== -1) {
-      var firstVocal = parsedRows.find(function(r) { return !r.isInst; });
-      var rem = firstVocal ? Math.max(1, Math.ceil(firstVocal.time - elapsed)) : 0;
-      if (rem > 0) {
-        var pill = document.createElement('span'); pill.className = 'countdown-pill';
-        pill.textContent = '• Vocals in ' + rem + 's'; cdBox.appendChild(pill);
+          if (activeRow.isInst && activeRow.section.toLowerCase().indexOf('outro') === -1) {
+        var nextVocal = parsedRows.slice(activeIdx + 1).find(function(r) { return !r.isInst; });
+        var rem = nextVocal ? Math.max(1, Math.ceil(nextVocal.time - elapsed)) : 0;
+        if (rem > 0) {
+          var pill = document.createElement('span');
+          pill.className = 'countdown-pill';
+          pill.textContent = '• Vocals in ' + rem + 's';
+          cdBox.appendChild(pill);
+        }
       }
-    }
     var vp = document.getElementById('viewport'); vp.innerHTML = '';
      var curStart = activeRow.time || 0;
   var nextTime = parsedRows[activeIdx + 1] ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
   var progress = Math.min(1, Math.max(0, (elapsed - curStart) / Math.max(0.5, nextTime - curStart)));
       var secSpan = Math.max(0.5, nextTime - curStart);
-      var startAt = activeRow.isInst ? Math.max(0.5, (secSpan - 2.5) / secSpan) : 0.65;
+      var startAt = activeRow.isInst ? Math.max(0.5, (secSpan - 1.2) / secSpan) : 0.65;
   var slidePct = progress > startAt ? (progress - startAt) / (1 - startAt) : 0;
      if (activeIdx >= parsedRows.length - 1) slidePct = 0;
   parsedRows.slice(activeIdx, activeIdx + 8).forEach(function(r, idx) {
