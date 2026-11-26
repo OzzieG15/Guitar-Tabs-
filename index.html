@@ -421,7 +421,8 @@
      var curStart = activeRow.time || 0;
   var nextTime = parsedRows[activeIdx + 1] ? parsedRows[activeIdx + 1].time : currentSong.totalSec;
   var progress = Math.min(1, Math.max(0, (elapsed - curStart) / Math.max(0.5, nextTime - curStart)));
-  var startAt = activeRow.isInst ? 0.35 : 0.65;
+      var secSpan = Math.max(0.5, nextTime - curStart);
+      var startAt = activeRow.isInst ? Math.max(0.5, (secSpan - 2.5) / secSpan) : 0.65;
   var slidePct = progress > startAt ? (progress - startAt) / (1 - startAt) : 0;
      if (activeIdx >= parsedRows.length - 1) slidePct = 0;
   parsedRows.slice(activeIdx, activeIdx + 8).forEach(function(r, idx) {
