@@ -1547,6 +1547,24 @@ headerRow.firstElementChild.appendChild(rndBtn);
 
 
  renderList(); requestAnimationFrame(tick);
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && !currentSong) {
+        if (pendingUpdate) { window.location.reload(); return; }
+        if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+          navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+        }
+      }
+    });
+    window.addEventListener('popstate', function() {
+      setTimeout(function() {
+        if (!currentSong) {
+          if (pendingUpdate) { window.location.reload(); return; }
+          if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+            navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
+          }
+        }
+      }, 60);
+    });
 })();
 </script>
 </body>
