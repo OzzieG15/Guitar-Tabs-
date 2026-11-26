@@ -594,7 +594,7 @@ getStepsForTarget(currentSong.key, TARGET_KEYS.at(targetIdx));
   document.querySelectorAll('.tab').forEach(function(btn) {
     btn.onclick = function() { document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); }); btn.classList.add('active'); activeTab = btn.dataset.tab; expandedArtist = null; renderList(); };
   });
-    searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); }; document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; if (pendingUpdate) { window.location.reload(); return; } playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); };
+    searchInput.oninput = function(e) { searchQuery = e.target.value; renderList(); }; document.getElementById('backBtn').onclick = function() { isPlaying = false; currentSong = null; if (pendingUpdate) { window.location.reload(); return; } playerScreen.classList.add('hidden'); welcomeScreen.classList.remove('hidden'); checkLiveVersion(true); };
 document.getElementById('playPauseBtn').onclick = function() { isPlaying = !isPlaying; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = isPlaying ? 'Pause' : 'Play'; };
   document.getElementById('restartBtn').onclick = function() { elapsed = 0; isPlaying = true; lastTick = performance.now(); document.getElementById('playPauseBtn').textContent = 'Pause'; renderPlayer(); }; document.getElementById('speedSelect').onchange = function(e) { speed = parseFloat(e.target.value) || 1; };
   var modal = document.getElementById('importModal');
@@ -1547,21 +1547,33 @@ headerRow.firstElementChild.appendChild(rndBtn);
 
 
  renderList(); requestAnimationFrame(tick);
+        var loadedSig = '';
+    function checkLiveVersion(now) {
+      Promise.all([
+        fetch('index.html?v=' + Date.now(), { cache: 'no-store' }).then(function(r) { return r.text(); }),
+        fetch('songs.js?v=' + Date.now(), { cache: 'no-store' }).then(function(r) { return r.text(); })
+      ]).then(function(files) {
+        var sig = files[0].length + ':' + files[1].length + ':' + files[0].slice(-200) + ':' + files[1].slice(-200);
+        if (!loadedSig) { loadedSig = sig; return; }
+        if (sig !== loadedSig) {
+          if (currentSong && !now) { pendingUpdate = true; return; }
+          window.location.reload();
+        }
+      }).catch(function() {});
+    }
+    checkLiveVersion(false);
+    setInterval(function() { if (!document.hidden) checkLiveVersion(false); }, 20000);
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden && !currentSong) {
         if (pendingUpdate) { window.location.reload(); return; }
-        if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-          navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
-        }
+        checkLiveVersion(true);
       }
     });
     window.addEventListener('popstate', function() {
       setTimeout(function() {
         if (!currentSong) {
           if (pendingUpdate) { window.location.reload(); return; }
-          if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
-            navigator.serviceWorker.getRegistration().then(function(reg) { if (reg) reg.update(); });
-          }
+          checkLiveVersion(true);
         }
       }, 60);
     });
