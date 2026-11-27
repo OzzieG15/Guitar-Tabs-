@@ -539,7 +539,7 @@ var wordTokens = rawLine.trim().replace(/(\([A-G][#b]?[^)]*\))\s+/g, '$1').split
       var btn = document.createElement('button');
       btn.className = 'sec-pill' + (idx === activeSecIdx ? ' active' : '');
       btn.textContent = sec.name;
-      btn.onclick = function() { elapsed = sec.start; lastTick = performance.now(); renderPlayer(); };
+        btn.onclick = function() { elapsed = sec.start; lastTick = performance.now(); renderPlayer(); vp.scrollTo({ top: 0, behavior: 'smooth' }); };
       jumper.appendChild(btn);
     });
     var activePill = jumper.children.item(activeSecIdx);
