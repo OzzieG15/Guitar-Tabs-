@@ -101,14 +101,14 @@
   .btn-restart { background: #1E293B; color: #E2E8F0; border: 1px solid #334155; padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; cursor: pointer; }
   .timer { font-size: 13px; font-weight: 700; color: #CBD5E1; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .speed-select { background: #1E293B; color: #F8FAFC; border: 1px solid #334155; padding: 7px 8px; border-radius: 8px; font-size: 13px; font-weight: 700; outline: none; }
-  .f-row2 { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-  .f-row2::-webkit-scrollbar { display: none; }
-  .sec-pill {
-    flex: 1 0 calc(33.333% - 4px); min-width: calc(33.333% - 4px);
-    background: #1E293B; color: #94A3B8; border: none; padding: 8px 6px;
-    border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
-  }
+    .f-row2 { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; touch-action: pan-x; scroll-behavior: smooth; scrollbar-width: none; }
+    .f-row2::-webkit-scrollbar { display: none; }
+    .sec-pill {
+      flex: 1 0 auto; min-width: calc(31% - 4px);
+      background: #1E293B; color: #E2E8F0; border: none; padding: 8px 12px;
+      border-radius: 8px; font-size: 12px; font-weight: 700; text-align: center;
+      white-space: nowrap; cursor: pointer;
+    }
   .sec-pill.active { background: #2563EB; color: #FFFFFF; }
   #importModal {
     position: absolute; inset: 0; background: rgba(2,6,23,0.97); z-index: 50;
