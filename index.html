@@ -77,8 +77,8 @@
   }
   .sec-label { font-size: 13px; font-weight: 700; color: #F8FAFC; margin-left: auto; }
   #viewport {
-       flex: 1; min-height: 0; background: #000000; overflow-y: auto;
-      -webkit-overflow-scrolling: touch; touch-action: pan-y; padding: 14px 14px 10px;
+      flex: 1; min-height: 0; background: #000000; overflow: hidden;
+      touch-action: none; padding: 14px 14px 10px;
      display: flex; flex-direction: column; gap: 8px;
   }
   .row { display: flex; align-items: flex-start; gap: 10px; transition: opacity 0.35s ease, color 0.35s ease; }
