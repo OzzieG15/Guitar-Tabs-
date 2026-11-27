@@ -77,8 +77,9 @@
   }
   .sec-label { font-size: 13px; font-weight: 700; color: #F8FAFC; margin-left: auto; }
   #viewport {
-    flex: 1; min-height: 0; background: #000000; overflow-y: auto;
-    -webkit-overflow-scrolling: touch; touch-action: pan-y; padding: 14px 14px 10px;
+ flex: 1; min-height: 0; background: #000000; overflow: hidden;
+  touch-action: none; user-select: none; -webkit-user-select: none; padding: 14px 14px 10px;
+
      display: flex; flex-direction: column; gap: 8px;
   }
   .row { display: flex; align-items: flex-start; gap: 10px; transition: opacity 0.35s ease, color 0.35s ease; }
@@ -1577,6 +1578,80 @@ headerRow.firstElementChild.appendChild(rndBtn);
         }
       }, 60);
     });
+     (function() {
+      var vpTouch = document.getElementById('viewport');
+      var touchStartY = 0, touchLastY = 0, dragOffset = 0, isDragging = false, wasPlayingTouch = false, resumeTimer = null;
+      function clearResumeTimer() {
+        if (resumeTimer) { clearInterval(resumeTimer); resumeTimer = null; }
+        var oldBadge = document.getElementById('ozReadyPill');
+        if (oldBadge) oldBadge.remove();
+      }
+      function showReadyCountdown() {
+        clearResumeTimer();
+        var secLeft = 3, cdBox = document.getElementById('countdownBox');
+        if (!cdBox) return;
+        var pill = document.createElement('span');
+        pill.id = 'ozReadyPill'; pill.className = 'countdown-pill';
+        pill.style.cssText = 'background:rgba(16,185,129,0.18);border-color:#10B981;color:#6EE7B7;';
+        pill.textContent = '• Get Ready: ' + secLeft + 's';
+        cdBox.innerHTML = ''; cdBox.appendChild(pill);
+        resumeTimer = setInterval(function() {
+          secLeft--;
+          if (!currentSong || isPlaying) { clearResumeTimer(); return; }
+          if (secLeft > 0) { pill.textContent = '• Get Ready: ' + secLeft + 's'; }
+          else { clearResumeTimer(); isPlaying = true; lastTick = performance.now(); var pBtn = document.getElementById('playPauseBtn'); if (pBtn) pBtn.textContent = 'Pause'; }
+        }, 1000);
+      }
+      function getActiveRowIdx() {
+        var idx = 0;
+        for (var i = 0; i < parsedRows.length; i++) { if (elapsed >= parsedRows[i].time) idx = i; else break; }
+        return idx;
+      }
+      function applyDragShift(px) {
+        for (var k = 0; k < vpTouch.children.length; k++) {
+          vpTouch.children[k].style.transition = 'none';
+          vpTouch.children[k].style.transform = 'translateY(' + px.toFixed(1) + 'px)';
+        }
+      }
+      vpTouch.addEventListener('touchstart', function(e) {
+        if (!currentSong || !parsedRows.length || e.touches.length !== 1) return;
+        clearResumeTimer(); touchStartY = touchLastY = e.touches[0].clientY; dragOffset = 0; isDragging = false;
+      }, { passive: true });
+      vpTouch.addEventListener('touchmove', function(e) {
+        if (!currentSong || !parsedRows.length || e.touches.length !== 1) return;
+        var curY = e.touches[0].clientY;
+        if (!isDragging && Math.abs(curY - touchStartY) < 12) return;
+        if (!isDragging) {
+          isDragging = true; wasPlayingTouch = isPlaying;
+          if (isPlaying) { isPlaying = false; var pBtn = document.getElementById('playPauseBtn'); if (pBtn) pBtn.textContent = 'Play'; }
+        }
+        dragOffset += (curY - touchLastY); touchLastY = curY;
+        var rowH = (vpTouch.firstElementChild ? vpTouch.firstElementChild.offsetHeight + 8 : 56);
+        var curIdx = getActiveRowIdx();
+        while (dragOffset <= -rowH && curIdx < parsedRows.length - 1) { dragOffset += rowH; curIdx++; elapsed = parsedRows[curIdx].time; renderPlayer(); }
+        while (dragOffset >= rowH && curIdx > 0) { dragOffset -= rowH; curIdx--; elapsed = parsedRows[curIdx].time; renderPlayer(); }
+        if ((curIdx === 0 && dragOffset > 0) || (curIdx === parsedRows.length - 1 && dragOffset < 0)) dragOffset *= 0.25;
+        applyDragShift(dragOffset);
+      }, { passive: true });
+      vpTouch.addEventListener('touchend', function() {
+        if (!isDragging) return;
+        isDragging = false;
+        var curIdx = getActiveRowIdx();
+        var rowH = (vpTouch.firstElementChild ? vpTouch.firstElementChild.offsetHeight + 8 : 56);
+        if (dragOffset < -(rowH * 0.45) && curIdx < parsedRows.length - 1) curIdx++;
+        else if (dragOffset > (rowH * 0.45) && curIdx > 0) curIdx--;
+        elapsed = parsedRows[curIdx].time; dragOffset = 0; renderPlayer();
+        for (var k = 0; k < vpTouch.children.length; k++) {
+          vpTouch.children[k].style.transition = 'transform 0.26s cubic-bezier(0.22, 1, 0.36, 1)';
+          vpTouch.children[k].style.transform = 'translateY(0px)';
+        }
+        if (wasPlayingTouch) { wasPlayingTouch = false; showReadyCountdown(); }
+      });
+      ['playPauseBtn', 'restartBtn', 'backBtn', 'secJumper'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener('click', clearResumeTimer);
+      });
+    })();
 })();
 </script>
 </body>
